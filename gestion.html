@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a1040">
+<title>Institut Noor — Gestion des Étudiants</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#C9A84C;--gd:#8B6914;--ink:#1A1208;--cream:#FBF7F0;--purple:#534AB7;--pl:#EEEDFE;--teal:#1D7A6B;--tl:#E0F2EE;--rose:#C4545A;--rl:#FAEAEA;--bd:rgba(201,168,76,.2)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink)}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* LOGIN */
+#login{align-items:center;justify-content:center;background:linear-gradient(160deg,#1A1208,#2D1F08,#0D1F15);padding:32px 20px;min-height:100vh}
+.logo{font-family:'Amiri',serif;font-size:48px;color:var(--gold);text-align:center}
+.ltitle{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#fff;text-align:center;margin:6px 0 4px}
+.lsub{font-size:13px;color:rgba(255,255,255,.5);text-align:center;margin-bottom:24px}
+.lcard{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:22px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px}
+.tabs{display:flex;gap:8px}
+.tab{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;transition:all .15s}
+.tab.on{background:var(--gold);border-color:var(--gold);color:#1A1208;font-weight:700}
+.fl{font-size:11px;font-weight:600;color:rgba(255,255,255,.45);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase}
+.ti{width:100%;padding:11px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.ti:focus{border-color:var(--gold)}
+.ti::placeholder{color:rgba(255,255,255,.3)}
+.lbtn{width:100%;padding:13px;border-radius:10px;background:linear-gradient(135deg,var(--gd),var(--gold));border:none;color:#fff;font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer}
+.lerr{font-size:12px;color:#ff8fa3;text-align:center;display:none}
+
+/* REGISTRATION */
+#reg{background:var(--cream)}
+.rhero{background:linear-gradient(160deg,#1A1208,#2D1F08);padding:36px 20px 44px;text-align:center}
+.rhar{font-family:'Amiri',serif;font-size:36px;color:var(--gold);margin-bottom:6px}
+.rht{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:#fff;margin-bottom:4px}
+.rhs{font-size:13px;color:rgba(255,255,255,.55)}
+.sbar{display:flex;background:var(--cream);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:10}
+.sb{flex:1;padding:12px 6px;text-align:center;font-size:11px;font-weight:500;color:rgba(26,18,8,.4);border-bottom:2px solid transparent;transition:all .2s}
+.sb.active{color:var(--gd);border-bottom-color:var(--gold);font-weight:600}
+.sbn{width:20px;height:20px;border-radius:50%;background:rgba(201,168,76,.15);color:var(--gd);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 3px}
+.sb.active .sbn{background:var(--gold);color:#fff}
+.rcont{padding:18px 16px 90px;max-width:480px;margin:0 auto}
+.psec{display:none}
+.psec.active{display:block}
+.field{margin-bottom:14px}
+.field label{font-size:11px;font-weight:600;color:rgba(26,18,8,.5);letter-spacing:.04em;display:block;margin-bottom:5px;text-transform:uppercase}
+.finp,.fsel{width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid var(--bd);background:#fff;color:var(--ink);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;appearance:none}
+.finp:focus,.fsel:focus{border-color:var(--gold)}
+.finp::placeholder{color:rgba(26,18,8,.3)}
+.grow{display:flex;gap:8px}
+.gopt{flex:1;padding:10px 8px;border:1.5px solid var(--bd);border-radius:10px;background:#fff;text-align:center;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;color:rgba(26,18,8,.5);transition:all .15s}
+.gopt.on{border-color:var(--gold);background:#FFFDF5;color:var(--ink);font-weight:600}
+.ftitle{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:4px}
+.fsub{font-size:13px;color:rgba(26,18,8,.5);margin-bottom:18px}
+.confhero{text-align:center;padding:28px 20px}
+.conficon{font-size:52px;margin-bottom:12px}
+.conft{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;margin-bottom:7px}
+.confs{font-size:13px;color:rgba(26,18,8,.55);line-height:1.7}
+.confcard{background:#fff;border:1.5px solid var(--bd);border-radius:12px;padding:13px;margin:14px 0}
+.crow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(201,168,76,.1)}
+.crow:last-child{border-bottom:none}
+.cl{font-size:12px;color:rgba(26,18,8,.45)}
+.cv{font-size:14px;font-weight:600;color:var(--ink);text-align:right;max-width:60%}
+.bbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--bd);padding:11px 16px;padding-bottom:calc(11px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;max-width:480px;margin:0 auto}
+.bbk{padding:12px 18px;border-radius:10px;border:1.5px solid rgba(201,168,76,.3);background:transparent;color:var(--gd);font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+.bnxt{flex:1;padding:12px;border-radius:10px;background:linear-gradient(135deg,var(--gd),var(--gold));border:none;color:#fff;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+.err{font-size:12px;color:var(--rose);margin-top:6px;display:none}
+
+/* DASHBOARD */
+#dash{background:#F0F2F8}
+.dtop{background:linear-gradient(135deg,#1a1040,#2d1f7a);color:#fff;padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;flex-shrink:0}
+.dtitle{font-size:16px;font-weight:700;flex:1}
+.dsout{background:rgba(255,255,255,.1);border:none;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.dcont{padding:14px;flex:1;overflow-y:auto}
+.year-selector{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.ys-label{font-size:12px;color:rgba(26,18,8,.5);margin-bottom:3px}
+.ys-val{font-size:16px;font-weight:700;color:var(--ink)}
+.ys-btns{display:flex;gap:6px}
+.ysbtn{padding:6px 14px;border-radius:8px;border:1.5px solid var(--bd);background:transparent;color:var(--gd);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.ysbtn.on{background:var(--gold);border-color:var(--gold);color:#fff}
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.scard{background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 7px rgba(0,0,0,.06)}
+.snum{font-size:26px;font-weight:700;color:var(--purple)}
+.slbl{font-size:11px;color:rgba(26,18,8,.5);margin-top:2px}
+.dash-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.dtab{padding:7px 14px;border-radius:18px;border:1.5px solid rgba(83,74,183,.2);background:#fff;color:rgba(26,18,8,.5);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0;transition:all .15s}
+.dtab.on{background:var(--purple);border-color:var(--purple);color:#fff}
+.shdr{font-size:13px;font-weight:600;color:rgba(26,18,8,.5);margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}
+.cbdg{background:var(--purple);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.stcard{background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.stcard-top{display:flex;align-items:center;gap:10px}
+.stav{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.stinfo{flex:1;min-width:0}
+.stnm{font-size:14px;font-weight:600;color:var(--ink)}
+.stdtl{font-size:12px;color:rgba(26,18,8,.5);margin-top:1px}
+.stbdgs{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.stbdg{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500}
+.bnv{background:var(--pl);color:var(--purple)}
+.bgf{background:#FAEDF0;color:#9B3A50}
+.bgm{background:#EAF0FA;color:#2A4A8B}
+.bnew{background:#E8F5E9;color:#2E7D32}
+.barch{background:#FEF0F0;color:#C4545A}
+.stcard-bot{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(201,168,76,.1)}
+.sab{flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;transition:all .15s}
+.sa-up{background:var(--tl);color:var(--teal)}
+.sa-wa{background:#E8F5E9;color:#2E7D32}
+.sa-dl{background:var(--rl);color:var(--rose)}
+.sa-edit{background:var(--pl);color:var(--purple)}
+.empty{text-align:center;padding:40px 20px;color:rgba(26,18,8,.4)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
+.modal-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:16px}
+.modal-btns{display:flex;gap:8px;margin-top:16px}
+.mbtn{flex:1;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+.mbtn-cancel{background:rgba(26,18,8,.08);color:var(--ink)}
+.mbtn-confirm{background:linear-gradient(135deg,var(--gd),var(--gold));color:#fff}
+.add-btn{position:fixed;bottom:80px;right:16px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#7F77DD);border:none;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(83,74,183,.4);display:flex;align-items:center;justify-content:center;z-index:20}
+.history-item{padding:8px 0;border-bottom:1px solid rgba(201,168,76,.1);display:flex;justify-content:space-between;align-items:center}
+.hi-year{font-size:12px;font-weight:600;color:var(--gd)}
+.hi-nv{font-size:13px;color:var(--ink)}
+.hi-prof{font-size:12px;color:rgba(26,18,8,.5)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="screen active">
+  <div class="logo">نور</div>
+  <div class="ltitle">Institut Noor</div>
+  <div style="width:40px;height:2px;background:var(--gold);margin:8px auto 16px"></div>
+  <div class="lsub">Système de gestion des étudiants</div>
+  <div class="lcard">
+    <div class="tabs">
+      <div class="tab on" id="lt-s" onclick="setMode('student')">Étudiant</div>
+      <div class="tab" id="lt-r" onclick="setMode('resp')">Responsable</div>
+    </div>
+    <div id="s-info" style="font-size:13px;color:rgba(255,255,255,.6);text-align:center;padding:8px 0">Inscrivez-vous à un cours</div>
+    <div id="r-form" style="display:none;flex-direction:column;gap:10px">
+      <div><div class="fl">Mot de passe</div>
+      <input class="ti" type="password" id="pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    </div>
+    <div class="lerr" id="perr">⚠ Mot de passe incorrect</div>
+    <button class="lbtn" id="lbtn" onclick="doLogin()">Accéder →</button>
+  </div>
+</div>
+
+<!-- REGISTRATION -->
+<div id="reg" class="screen">
+  <div class="rhero">
+    <div class="rhar">نور — Institut</div>
+    <div class="rht">Inscription au cours</div>
+    <div style="width:36px;height:2px;background:var(--gold);margin:10px auto 8px"></div>
+    <div class="rhs">Remplissez le formulaire ci-dessous</div>
+  </div>
+  <div class="sbar">
+    <div class="sb active" id="sb1"><div class="sbn">1</div>Infos</div>
+    <div class="sb" id="sb2"><div class="sbn">2</div>Cours</div>
+    <div class="sb" id="sb3"><div class="sbn">3</div>Confirmé</div>
+  </div>
+  <div class="rcont">
+
+    <!-- STEP 1: Personal Info -->
+    <div class="psec active" id="ps1">
+      <div class="ftitle">Informations personnelles</div>
+      <div class="fsub">Ces données sont conservées chaque année.</div>
+      <div class="field"><label>Prénom *</label><input class="finp" id="rp" type="text" placeholder="Votre prénom" autocomplete="given-name"/></div>
+      <div class="field"><label>Nom *</label><input class="finp" id="rn" type="text" placeholder="Votre nom" autocomplete="family-name"/></div>
+      <div class="field"><label>Téléphone WhatsApp *</label><input class="finp" id="rt" type="tel" placeholder="+33 6 XX XX XX XX"/></div>
+      <div class="field"><label>Email</label><input class="finp" id="re" type="email" placeholder="votre@email.com"/></div>
+      <div class="field"><label>Date de naissance</label><input class="finp" id="rd" type="date"/></div>
+      <div class="field"><label>Sexe *</label>
+        <div class="grow">
+          <div class="gopt" id="gof" onclick="setG('Femme')">👩 Femme</div>
+          <div class="gopt" id="gom" onclick="setG('Homme')">👨 Homme</div>
+        </div>
+      </div>
+      <div class="err" id="e1">⚠ Veuillez remplir les champs obligatoires</div>
+    </div>
+
+    <!-- STEP 2: Course Info -->
+    <div class="psec" id="ps2">
+      <div class="ftitle">Informations du cours</div>
+      <div class="fsub">Choisissez votre niveau et votre professeur.</div>
+      <div class="field"><label>Niveau *</label>
+        <select class="fsel" id="rnv">
+          <option value="">-- Choisir le niveau --</option>
+          <option>Niveau 1 — Débutant</option>
+          <option>Niveau 2 — Élémentaire</option>
+          <option>Niveau 3 — Intermédiaire</option>
+          <option>Niveau 4 — Avancé</option>
+        </select>
+      </div>
+      <div class="field"><label>Professeur *</label>
+        <select class="fsel" id="rpr">
+          <option value="">-- Choisir le professeur --</option>
+          <option>Prof. Zakaria</option>
+          <option>Prof. Al-Wali</option>
+          <option>Nouveau Prof.</option>
+        </select>
+      </div>
+      <div class="field"><label>Groupe *</label>
+        <select class="fsel" id="rgr">
+          <option value="">-- Choisir le groupe --</option>
+          <option>Dimanche · Femmes · 10h30–12h00</option>
+          <option>Dimanche · Hommes · 12h00–13h30</option>
+          <option>Dimanche · Hommes · 13h00–14h30</option>
+          <option>Dimanche · Femmes · 13h00–15h00</option>
+          <option>Dimanche · Femmes · 14h00–16h30</option>
+          <option>Dimanche · Hommes · 16h30–19h00</option>
+          <option>Dimanche · Mixte · 14h30–16h00</option>
+          <option>Mercredi · Femmes · 19h00–21h00</option>
+        </select>
+      </div>
+      <div class="field"><label>Année scolaire</label>
+        <input class="finp" id="ryr" type="text" placeholder="ex: 2025-2026" value="2025-2026"/>
+      </div>
+      <div class="field"><label>Notes (facultatif)</label>
+        <input class="finp" id="rnt" type="text" placeholder="Informations supplémentaires..."/>
+      </div>
+      <div class="err" id="e2">⚠ Veuillez choisir le niveau, le professeur et le groupe</div>
+    </div>
+
+    <!-- STEP 3: Confirmation -->
+    <div class="psec" id="ps3">
+      <div class="confhero">
+        <div class="conficon">✅</div>
+        <div class="conft">Inscription enregistrée!</div>
+        <div class="confs">Vos données sont sauvegardées. Le responsable vous contactera pour confirmer.</div>
+      </div>
+      <div class="confcard">
+        <div class="crow"><span class="cl">Nom complet</span><span class="cv" id="cnm"></span></div>
+        <div class="crow"><span class="cl">Niveau</span><span class="cv" id="cnv"></span></div>
+        <div class="crow"><span class="cl">Professeur</span><span class="cv" id="cpr"></span></div>
+        <div class="crow"><span class="cl">Groupe</span><span class="cv" id="cgr"></span></div>
+        <div class="crow"><span class="cl">Année</span><span class="cv" id="cyr"></span></div>
+        <div class="crow"><span class="cl">Téléphone</span><span class="cv" id="ctl"></span></div>
+      </div>
+      <button class="bnxt" style="width:100%;margin-bottom:10px" onclick="resetReg()">Nouvelle inscription</button>
+      <button class="bbk" style="width:100%" onclick="showScr('login')">Retour à l'accueil</button>
+    </div>
+  </div>
+  <div class="bbar" id="bbar">
+    <button class="bbk" id="bk" onclick="goBack()" style="display:none">← Retour</button>
+    <button class="bnxt" id="nx" onclick="goNext()">Continuer →</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash" class="screen">
+  <div class="dtop">
+    <div class="dtitle">🎓 Institut Noor</div>
+    <button class="dsout" onclick="showScr('login')">Déconnexion</button>
+  </div>
+  <div class="dcont">
+
+    <!-- Year Selector -->
+    <div class="year-selector">
+      <div>
+        <div class="ys-label">Année scolaire</div>
+        <div class="ys-val" id="cur-year">2025-2026</div>
+      </div>
+      <div class="ys-btns">
+        <button class="ysbtn" onclick="changeYear(-1)">◀</button>
+        <button class="ysbtn on" onclick="changeYear(0)">En cours</button>
+        <button class="ysbtn" onclick="changeYear(1)">▶</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="sgrid">
+      <div class="scard"><div class="snum" id="st">0</div><div class="slbl">Total inscrits</div></div>
+      <div class="scard"><div class="snum" id="sn" style="color:#2E7D32">0</div><div class="slbl">Nouveaux</div></div>
+      <div class="scard"><div class="snum" id="sf" style="color:#9B3A50">0</div><div class="slbl">Femmes</div></div>
+      <div class="scard"><div class="snum" id="sm" style="color:#2A4A8B">0</div><div class="slbl">Hommes</div></div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="dash-tabs">
+      <div class="dtab on" onclick="setF('all',this)">Tous</div>
+      <div class="dtab" onclick="setF('Niveau 1',this)">Nv. 1</div>
+      <div class="dtab" onclick="setF('Niveau 2',this)">Nv. 2</div>
+      <div class="dtab" onclick="setF('Niveau 3',this)">Nv. 3</div>
+      <div class="dtab" onclick="setF('Niveau 4',this)">Nv. 4</div>
+      <div class="dtab" onclick="setF('Femme',this)">Femmes</div>
+      <div class="dtab" onclick="setF('Homme',this)">Hommes</div>
+    </div>
+
+    <div class="shdr">
+      <span>Liste des étudiants</span>
+      <span class="cbdg" id="cbdg">0</span>
+    </div>
+    <div id="slist"></div>
+  </div>
+
+  <!-- Add Button -->
+  <button class="add-btn" onclick="openAddModal()" title="Ajouter un étudiant">+</button>
+</div>
+
+<!-- UPGRADE MODAL -->
+<div class="modal-overlay" id="upgrade-modal">
+  <div class="modal">
+    <div class="modal-title">⬆️ Promouvoir au niveau suivant</div>
+    <div style="font-size:14px;color:rgba(26,18,8,.6);margin-bottom:12px">L'étudiant sera promu au niveau suivant pour l'année <strong id="next-year-label"></strong>. Son historique sera conservé.</div>
+    <div class="field"><label>Nouveau niveau</label><select class="fsel" id="new-level"><option>Niveau 1 — Débutant</option><option>Niveau 2 — Élémentaire</option><option>Niveau 3 — Intermédiaire</option><option>Niveau 4 — Avancé</option></select></div>
+    <div class="field"><label>Nouveau groupe</label><select class="fsel" id="new-group"><option>Dimanche · Femmes · 10h30–12h00</option><option>Dimanche · Hommes · 12h00–13h30</option><option>Dimanche · Hommes · 13h00–14h30</option><option>Dimanche · Femmes · 13h00–15h00</option><option>Dimanche · Femmes · 14h00–16h30</option><option>Dimanche · Hommes · 16h30–19h00</option><option>Dimanche · Mixte · 14h30–16h00</option><option>Mercredi · Femmes · 19h00–21h00</option></select></div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-cancel" onclick="closeModal('upgrade-modal')">Annuler</button>
+      <button class="mbtn mbtn-confirm" onclick="confirmUpgrade()">Promouvoir ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD STUDENT MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-title">➕ Ajouter un étudiant</div>
+    <div class="field"><label>Prénom *</label><input class="finp" id="ap" type="text" placeholder="Prénom"/></div>
+    <div class="field"><label>Nom *</label><input class="finp" id="an" type="text" placeholder="Nom"/></div>
+    <div class="field"><label>Téléphone *</label><input class="finp" id="at" type="tel" placeholder="+33 6 XX XX XX XX"/></div>
+    <div class="field"><label>Sexe</label>
+      <div class="grow">
+        <div class="gopt" id="agf" onclick="setAG('Femme')">👩 Femme</div>
+        <div class="gopt" id="agm" onclick="setAG('Homme')">👨 Homme</div>
+      </div>
+    </div>
+    <div class="field"><label>Niveau *</label>
+      <select class="fsel" id="anv">
+        <option value="">-- Niveau --</option>
+        <option>Niveau 1 — Débutant</option>
+        <option>Niveau 2 — Élémentaire</option>
+        <option>Niveau 3 — Intermédiaire</option>
+        <option>Niveau 4 — Avancé</option>
+      </select>
+    </div>
+    <div class="field"><label>Professeur *</label>
+      <select class="fsel" id="apr">
+        <option value="">-- Professeur --</option>
+        <option>Prof. Zakaria</option>
+        <option>Prof. Al-Wali</option>
+        <option>Nouveau Prof.</option>
+      </select>
+    </div>
+    <div class="field"><label>Groupe</label>
+      <select class="fsel" id="agr">
+        <option value="">-- Groupe --</option>
+        <option>Dimanche · Femmes · 10h30–12h00</option>
+        <option>Dimanche · Hommes · 12h00–13h30</option>
+        <option>Dimanche · Hommes · 13h00–14h30</option>
+        <option>Dimanche · Femmes · 13h00–15h00</option>
+        <option>Dimanche · Femmes · 14h00–16h30</option>
+        <option>Dimanche · Hommes · 16h30–19h00</option>
+        <option>Dimanche · Mixte · 14h30–16h00</option>
+        <option>Mercredi · Femmes · 19h00–21h00</option>
+      </select>
+    </div>
+    <div class="lerr" id="aerr" style="display:none">⚠ Remplissez les champs obligatoires</div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-cancel" onclick="closeModal('add-modal')">Annuler</button>
+      <button class="mbtn mbtn-confirm" onclick="saveNewStudent()">Enregistrer ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="modal-overlay" id="hist-modal">
+  <div class="modal">
+    <div class="modal-title">📋 Historique de l'étudiant</div>
+    <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:12px" id="hist-name"></div>
+    <div id="hist-list"></div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-confirm" style="flex:none;padding:12px 24px" onclick="closeModal('hist-modal')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getDatabase,ref,push,onValue,remove,update,set}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const FC={apiKey:"AIzaSyC9WsBwhpG-UdM62Xa1BiZjW8gL74rAv34",authDomain:"parle-arabe.firebaseapp.com",databaseURL:"https://parle-arabe-default-rtdb.europe-west1.firebasedatabase.app",projectId:"parle-arabe",storageBucket:"parle-arabe.firebasestorage.app",messagingSenderId:"985415763625",appId:"1:985415763625:web:e9727341e4110572180bb8"};
+const PW='noor2024';
+const CL=[{bg:'#EEEDFE',fg:'#3C3489'},{bg:'#E1F5EE',fg:'#085041'},{bg:'#FAECE7',fg:'#712B13'},{bg:'#E6F1FB',fg:'#0C447C'},{bg:'#FAEEDA',fg:'#633806'},{bg:'#EAF3DE',fg:'#27500A'}];
+function cFor(n){let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))%CL.length;return CL[h]}
+function ini(n){const p=n.trim().split(' ');return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():n.slice(0,2).toUpperCase()}
+
+const appFb=initializeApp(FC);const db=getDatabase(appFb);
+let mode='student',selG='',curF='all',allStudents=[],curYear='2025-2026',upgradeKey=null,addG='';
+
+window.setMode=m=>{mode=m;document.getElementById('lt-s').classList.toggle('on',m==='student');document.getElementById('lt-r').classList.toggle('on',m==='resp');document.getElementById('s-info').style.display=m==='student'?'block':'none';document.getElementById('r-form').style.display=m==='resp'?'flex':'none';document.getElementById('lbtn').textContent=m==='student'?"S'inscrire →":"Connexion →";};
+
+window.doLogin=()=>{
+  if(mode==='student'){showScr('reg');}
+  else{if(document.getElementById('pw').value===PW){showScr('dash');loadStudents();}else{document.getElementById('perr').style.display='block';}}
+};
+
+window.showScr=id=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');};
+
+// REGISTRATION
+let step=1;
+window.setG=g=>{selG=g;document.getElementById('gof').classList.toggle('on',g==='Femme');document.getElementById('gom').classList.toggle('on',g==='Homme');};
+
+window.goNext=async()=>{
+  if(step===1){
+    const p=document.getElementById('rp').value.trim(),n=document.getElementById('rn').value.trim(),t=document.getElementById('rt').value.trim();
+    if(!p||!n||!t||!selG){document.getElementById('e1').style.display='block';return;}
+    document.getElementById('e1').style.display='none';showStep(2);
+  } else if(step===2){
+    const nv=document.getElementById('rnv').value,pr=document.getElementById('rpr').value,gr=document.getElementById('rgr').value;
+    if(!nv||!pr||!gr){document.getElementById('e2').style.display='block';return;}
+    document.getElementById('e2').style.display='none';
+    const p=document.getElementById('rp').value.trim(),n=document.getElementById('rn').value.trim(),t=document.getElementById('rt').value.trim();
+    const yr=document.getElementById('ryr').value||'2025-2026';
+    const student={prenom:p,nom:n,tel:t,email:document.getElementById('re').value.trim(),dob:document.getElementById('rd').value,sexe:selG,niveau:nv,prof:pr,groupe:gr,annee:yr,notes:document.getElementById('rnt').value.trim(),ts:Date.now(),statut:'nouveau',historique:[{annee:yr,niveau:nv,prof:pr,groupe:gr,date:new Date().toLocaleDateString('fr-FR')}]};
+    try{await push(ref(db,'etudiants2'),student);}catch(e){console.error(e);}
+    document.getElementById('cnm').textContent=p+' '+n;
+    document.getElementById('cnv').textContent=nv;
+    document.getElementById('cpr').textContent=pr;
+    document.getElementById('cgr').textContent=gr;
+    document.getElementById('cyr').textContent=yr;
+    document.getElementById('ctl').textContent=t;
+    showStep(3);
+  }
+};
+
+window.goBack=()=>{if(step>1)showStep(step-1);};
+
+function showStep(n){
+  document.querySelectorAll('.psec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('ps'+n).classList.add('active');
+  document.querySelectorAll('.sb').forEach((s,i)=>s.classList.toggle('active',i+1===n));
+  step=n;
+  document.getElementById('bk').style.display=n>1&&n<3?'block':'none';
+  document.getElementById('nx').style.display=n<3?'block':'none';
+  document.getElementById('bbar').style.display=n===3?'none':'flex';
+  window.scrollTo(0,0);
+}
+
+window.resetReg=()=>{
+  selG='';
+  ['rp','rn','rt','re','rd','rnt'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ryr').value='2025-2026';
+  document.getElementById('rnv').value='';document.getElementById('rpr').value='';document.getElementById('rgr').value='';
+  document.getElementById('gof').classList.remove('on');document.getElementById('gom').classList.remove('on');
+  showStep(1);
+};
+
+// DASHBOARD
+function loadStudents(){
+  onValue(ref(db,'etudiants2'),snap=>{
+    allStudents=[];
+    snap.forEach(c=>{const v=c.val();v._k=c.key;allStudents.push(v);});
+    allStudents.sort((a,b)=>b.ts-a.ts);
+    updateStats();renderStudents();
+  });
+}
+
+function updateStats(){
+  const f=allStudents.filter(s=>s.annee===curYear);
+  document.getElementById('st').textContent=f.length;
+  document.getElementById('sn').textContent=f.filter(s=>s.statut==='nouveau').length;
+  document.getElementById('sf').textContent=f.filter(s=>s.sexe==='Femme').length;
+  document.getElementById('sm').textContent=f.filter(s=>s.sexe==='Homme').length;
+}
+
+window.changeYear=(dir)=>{
+  const parts=curYear.split('-');
+  if(dir===0){curYear='2025-2026';}
+  else{const y=parseInt(parts[0])+dir;curYear=y+'-'+(y+1);}
+  document.getElementById('cur-year').textContent=curYear;
+  updateStats();renderStudents();
+};
+
+window.setF=(f,btn)=>{curF=f;document.querySelectorAll('.dtab').forEach(c=>c.classList.remove('on'));btn.classList.add('on');renderStudents();};
+
+function renderStudents(){
+  const l=document.getElementById('slist');
+  let fl=allStudents.filter(s=>s.annee===curYear);
+  if(curF!=='all'){
+    if(curF==='Femme'||curF==='Homme')fl=fl.filter(s=>s.sexe===curF);
+    else fl=fl.filter(s=>s.niveau&&s.niveau.startsWith(curF));
+  }
+  document.getElementById('cbdg').textContent=fl.length;
+  l.innerHTML='';
+  if(!fl.length){l.innerHTML='<div class="empty"><div style="font-size:36px;margin-bottom:10px">📋</div><div>Aucun étudiant pour cette année</div></div>';return;}
+  fl.forEach(s=>{
+    const cl=cFor(s.prenom+s.nom);
+    const nv=s.niveau?s.niveau.split(' — ')[0]:'—';
+    const d=document.createElement('div');d.className='stcard';
+    d.innerHTML=`<div class="stcard-top">
+      <div class="stav" style="background:${cl.bg};color:${cl.fg}">${ini(s.prenom+' '+s.nom)}</div>
+      <div class="stinfo">
+        <div class="stnm">${s.prenom} ${s.nom}</div>
+        <div class="stdtl">📞 ${s.tel}</div>
+        <div class="stbdgs">
+          <span class="stbdg bnv">${nv}</span>
+          <span class="stbdg ${s.sexe==='Femme'?'bgf':'bgm'}">${s.sexe}</span>
+          ${s.statut==='nouveau'?'<span class="stbdg bnew">Nouveau</span>':'<span class="stbdg barch">Promu</span>'}
+        </div>
+        <div class="stdtl" style="margin-top:3px">👨‍🏫 ${s.prof||'—'} · ⏰ ${s.groupe?s.groupe.split('·')[1]+'·'+s.groupe.split('·')[2]:'—'}</div>
+      </div>
+    </div>
+    <div class="stcard-bot">
+      <button class="sab sa-up" onclick="openUpgrade('${s._k}','${s.niveau||''}')">⬆️ Promouvoir</button>
+      <button class="sab sa-edit" onclick="showHistory('${s._k}')">📋 Historique</button>
+      <button class="sab sa-wa" onclick="cWA('${s.tel}','${s.prenom}')">📱</button>
+      <button class="sab sa-dl" onclick="delS('${s._k}')">🗑</button>
+    </div>`;
+    l.appendChild(d);
+  });
+}
+
+// UPGRADE
+window.openUpgrade=(key,currentLevel)=>{
+  upgradeKey=key;
+  const levels=['Niveau 1 — Débutant','Niveau 2 — Élémentaire','Niveau 3 — Intermédiaire','Niveau 4 — Avancé'];
+  const idx=levels.indexOf(currentLevel);
+  const nextLevel=levels[Math.min(idx+1,levels.length-1)];
+  document.getElementById('new-level').value=nextLevel;
+  const parts=curYear.split('-');
+  const nextYear=(parseInt(parts[0])+1)+'-'+(parseInt(parts[1])+1);
+  document.getElementById('next-year-label').textContent=nextYear;
+  document.getElementById('upgrade-modal').classList.add('open');
+};
+
+window.confirmUpgrade=async()=>{
+  if(!upgradeKey)return;
+  const s=allStudents.find(x=>x._k===upgradeKey);
+  if(!s)return;
+  const parts=curYear.split('-');
+  const nextYear=(parseInt(parts[0])+1)+'-'+(parseInt(parts[1])+1);
+  const newLevel=document.getElementById('new-level').value;
+  const newGroup=document.getElementById('new-group').value;
+  const hist=s.historique||[];
+  hist.push({annee:nextYear,niveau:newLevel,groupe:newGroup,prof:s.prof,date:new Date().toLocaleDateString('fr-FR')});
+  await update(ref(db,'etudiants2/'+upgradeKey),{niveau:newLevel,groupe:newGroup,annee:nextYear,statut:'promu',historique:hist});
+  closeModal('upgrade-modal');
+};
+
+// HISTORY
+window.showHistory=key=>{
+  const s=allStudents.find(x=>x._k===key);
+  if(!s)return;
+  document.getElementById('hist-name').textContent=s.prenom+' '+s.nom;
+  const hist=s.historique||[{annee:s.annee||'—',niveau:s.niveau||'—',prof:s.prof||'—',groupe:s.groupe||'—'}];
+  let html='';
+  hist.forEach(h=>{html+=`<div class="history-item"><div><div class="hi-year">${h.annee}</div><div class="hi-nv">${h.niveau}</div><div class="hi-prof">${h.prof||''} · ${h.groupe?h.groupe.split('·').slice(1).join('·'):'—'}</div></div><div style="font-size:11px;color:rgba(26,18,8,.4)">${h.date||''}</div></div>`;});
+  document.getElementById('hist-list').innerHTML=html;
+  document.getElementById('hist-modal').classList.add('open');
+};
+
+// ADD STUDENT
+window.openAddModal=()=>{
+  addG='';
+  ['ap','an','at'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('anv').value='';document.getElementById('apr').value='';document.getElementById('agr').value='';
+  document.getElementById('agf').classList.remove('on');document.getElementById('agm').classList.remove('on');
+  document.getElementById('aerr').style.display='none';
+  document.getElementById('add-modal').classList.add('open');
+};
+window.setAG=g=>{addG=g;document.getElementById('agf').classList.toggle('on',g==='Femme');document.getElementById('agm').classList.toggle('on',g==='Homme');};
+window.saveNewStudent=async()=>{
+  const p=document.getElementById('ap').value.trim(),n=document.getElementById('an').value.trim(),t=document.getElementById('at').value.trim(),nv=document.getElementById('anv').value,pr=document.getElementById('apr').value;
+  if(!p||!n||!t||!nv||!pr){document.getElementById('aerr').style.display='block';return;}
+  const gr=document.getElementById('agr').value;
+  const student={prenom:p,nom:n,tel:t,sexe:addG||'—',niveau:nv,prof:pr,groupe:gr,annee:curYear,ts:Date.now(),statut:'nouveau',historique:[{annee:curYear,niveau:nv,prof:pr,groupe:gr,date:new Date().toLocaleDateString('fr-FR')}]};
+  await push(ref(db,'etudiants2'),student);
+  closeModal('add-modal');
+};
+
+window.closeModal=id=>document.getElementById(id).classList.remove('open');
+window.cWA=(tel,prenom)=>{window.open('https://wa.me/'+tel.replace(/[\s+]/g,'')+'?text='+encodeURIComponent('Salam '+prenom+', votre inscription à Institut Noor a été confirmée. Bienvenue! 🎉'));};
+window.delS=async k=>{if(confirm('Supprimer cet étudiant définitivement?'))await remove(ref(db,'etudiants2/'+k));};
+</script>
+</body>
+</html>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a1040">
+<title>Institut Noor — Plateforme</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#C9A84C;--gd:#8B6914;--ink:#1A1208;--cream:#FBF7F0;--purple:#534AB7;--pl:#EEEDFE;--teal:#1D7A6B;--tl:#E0F2EE;--rose:#C4545A;--rl:#FAEAEA;--bd:rgba(201,168,76,.18);--surface:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink)}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* ── LOGIN ── */
+#login{align-items:center;justify-content:center;background:linear-gradient(160deg,#1A1208,#2D1F08,#0D1A12);padding:32px 20px;min-height:100vh}
+.brand{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--gold);text-align:center;letter-spacing:.04em}
+.brand-sub{font-size:13px;color:rgba(255,255,255,.45);text-align:center;margin:4px 0 28px;letter-spacing:.08em;text-transform:uppercase}
+.lcard{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:24px;width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px}
+.lcard-title{font-size:16px;font-weight:600;color:#fff;text-align:center}
+.fl{font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase}
+.ti{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.ti:focus{border-color:rgba(201,168,76,.6)}
+.ti::placeholder{color:rgba(255,255,255,.3)}
+.lbtn{width:100%;padding:13px;border-radius:10px;background:linear-gradient(135deg,var(--gd),var(--gold));border:none;color:#fff;font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .15s}
+.lbtn:active{opacity:.85}
+.lerr{font-size:12px;color:#ff8fa3;text-align:center;display:none}
+.role-row{display:flex;gap:8px}
+.rb{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;transition:all .15s}
+.rb.on{background:var(--gold);border-color:var(--gold);color:#1A1208;font-weight:700}
+
+/* ── APP SHELL ── */
+#app{background:#F0F2F8}
+.app-top{background:linear-gradient(135deg,#1a1040,#2d1f7a);color:#fff;padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 12px rgba(26,16,64,.3)}
+.app-logo{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold)}
+.app-user{font-size:12px;color:rgba(255,255,255,.6);flex:1}
+.app-signout{background:rgba(255,255,255,.1);border:none;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.bnav{display:flex;background:var(--surface);border-top:1px solid rgba(83,74,183,.12);flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0px)}
+.bn{flex:1;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:none;color:rgba(26,18,8,.35);font-size:10px;font-family:'DM Sans',sans-serif;transition:color .15s;border-top:2px solid transparent}
+.bn.active{color:var(--purple);border-top-color:var(--purple)}
+.bn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.page{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.page.active{display:flex;flex-direction:column}
+.pcont{padding:16px;max-width:520px;margin:0 auto;width:100%}
+
+/* ── CARDS & LAYOUT ── */
+.section-title{font-size:13px;font-weight:600;color:rgba(26,18,8,.5);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;letter-spacing:.04em;text-transform:uppercase}
+.badge{background:var(--purple);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.card{background:var(--surface);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.05);border:1px solid rgba(201,168,76,.1)}
+.card-top{display:flex;align-items:center;gap:10px}
+.av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.card-info{flex:1;min-width:0}
+.card-name{font-size:14px;font-weight:600;color:var(--ink)}
+.card-sub{font-size:12px;color:rgba(26,18,8,.5);margin-top:2px}
+.card-badges{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.cbdg{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500}
+.cnv{background:var(--pl);color:var(--purple)}
+.cgf{background:#FAEDF0;color:#9B3A50}
+.cgm{background:#EAF0FA;color:#2A4A8B}
+.cnew{background:#E8F5E9;color:#2E7D32}
+.cprom{background:#FEF0E8;color:#8B4000}
+.card-actions{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(201,168,76,.1)}
+.ca-btn{flex:1;padding:7px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif}
+.ca-promote{background:var(--tl);color:var(--teal)}
+.ca-edit{background:var(--pl);color:var(--purple)}
+.ca-wa{background:#E8F5E9;color:#2E7D32}
+.ca-del{background:var(--rl);color:var(--rose)}
+.ca-hist{background:#FEF0E8;color:#8B4000}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:var(--surface);border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.stat-num{font-size:28px;font-weight:700;color:var(--purple)}
+.stat-lbl{font-size:12px;color:rgba(26,18,8,.5);margin-top:3px}
+
+/* ── YEAR BAR ── */
+.year-bar{background:var(--surface);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.yb-label{font-size:11px;color:rgba(26,18,8,.45);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.yb-val{font-size:17px;font-weight:700;color:var(--ink)}
+.yb-btns{display:flex;gap:6px}
+.ybb{padding:6px 12px;border-radius:8px;border:1.5px solid var(--bd);background:transparent;color:var(--gd);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.ybb.on{background:var(--gold);border-color:var(--gold);color:#fff}
+
+/* ── FILTERS ── */
+.filters{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px}
+.fchip{padding:6px 13px;border-radius:18px;border:1.5px solid rgba(83,74,183,.2);background:var(--surface);color:rgba(26,18,8,.5);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0;transition:all .15s}
+.fchip.on{background:var(--purple);border-color:var(--purple);color:#fff}
+
+/* ── SETUP CARDS ── */
+.setup-card{background:var(--surface);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,.04);display:flex;align-items:center;gap:12px}
+.setup-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.setup-info{flex:1}
+.setup-name{font-size:14px;font-weight:600;color:var(--ink)}
+.setup-sub{font-size:12px;color:rgba(26,18,8,.5);margin-top:2px}
+.setup-actions{display:flex;gap:6px}
+.sa{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px}
+.sa-e{background:var(--pl)}
+.sa-d{background:var(--rl)}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:72px;right:16px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#7F77DD);border:none;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(83,74,183,.4);display:flex;align-items:center;justify-content:center;z-index:30;transition:transform .15s}
+.fab:active{transform:scale(.92)}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.modal-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink)}
+.modal-close{width:28px;height:28px;border-radius:50%;background:rgba(26,18,8,.08);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.field{margin-bottom:12px}
+.field label{font-size:11px;font-weight:600;color:rgba(26,18,8,.5);letter-spacing:.04em;display:block;margin-bottom:5px;text-transform:uppercase}
+.finp,.fsel{width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid var(--bd);background:var(--cream);color:var(--ink);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.finp:focus,.fsel:focus{border-color:var(--gold)}
+.finp::placeholder{color:rgba(26,18,8,.3)}
+.grow{display:flex;gap:8px}
+.gopt{flex:1;padding:10px;border:1.5px solid var(--bd);border-radius:10px;background:var(--surface);text-align:center;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;color:rgba(26,18,8,.5);transition:all .15s}
+.gopt.on{border-color:var(--gold);background:#FFFDF5;color:var(--ink);font-weight:600}
+.modal-btns{display:flex;gap:8px;margin-top:16px}
+.mbtn{flex:1;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+.mbtn-c{background:rgba(26,18,8,.08);color:var(--ink)}
+.mbtn-ok{background:linear-gradient(135deg,var(--gd),var(--gold));color:#fff}
+.mbtn-purple{background:linear-gradient(135deg,var(--purple),#7F77DD);color:#fff}
+.merr{font-size:12px;color:var(--rose);margin-top:8px;display:none}
+
+/* ── HISTORY ── */
+.hist-item{padding:10px 0;border-bottom:1px solid rgba(201,168,76,.1);display:flex;justify-content:space-between;align-items:flex-start}
+.hist-year{font-size:12px;font-weight:600;color:var(--gd);margin-bottom:3px}
+.hist-nv{font-size:13px;font-weight:500;color:var(--ink)}
+.hist-det{font-size:12px;color:rgba(26,18,8,.5);margin-top:2px}
+.hist-date{font-size:11px;color:rgba(26,18,8,.35)}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:48px 20px;color:rgba(26,18,8,.4)}
+.empty-icon{font-size:40px;margin-bottom:10px}
+
+/* ── WELCOME ── */
+.welcome-card{background:linear-gradient(135deg,#1a1040,#2d1f7a);border-radius:16px;padding:18px;color:#fff;margin-bottom:16px}
+.wc-greeting{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:4px}
+.wc-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
+.wc-role{font-size:12px;color:var(--gold);margin-top:4px;font-weight:500}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="screen active">
+  <div class="brand">Institut Noor</div>
+  <div class="brand-sub">Plateforme de gestion</div>
+  <div class="lcard">
+    <div class="lcard-title">Connexion</div>
+    <div>
+      <div class="fl">Rôle</div>
+      <div class="role-row">
+        <div class="rb on" id="rb-admin" onclick="setRole('admin')">👑 Admin</div>
+        <div class="rb" id="rb-prof" onclick="setRole('prof')">👨‍🏫 Professeur</div>
+      </div>
+    </div>
+    <div>
+      <div class="fl">Nom d'utilisateur</div>
+      <input class="ti" id="l-user" type="text" placeholder="ex: zakaria" autocomplete="off"/>
+    </div>
+    <div>
+      <div class="fl">Mot de passe</div>
+      <input class="ti" id="l-pw" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <div class="lerr" id="l-err">⚠ Identifiants incorrects</div>
+    <button class="lbtn" onclick="doLogin()">Se connecter →</button>
+    <div style="font-size:11px;color:rgba(255,255,255,.35);text-align:center">Admin: zakaria / noor2024</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="screen">
+  <div class="app-top">
+    <div class="app-logo">Institut Noor</div>
+    <div class="app-user" id="app-user"></div>
+    <button class="app-signout" onclick="signOut()">Déconnexion</button>
+  </div>
+
+  <!-- PAGE: TABLEAU DE BORD -->
+  <div id="pg-home" class="page active">
+    <div class="pcont">
+      <div class="welcome-card">
+        <div class="wc-greeting">Bienvenue,</div>
+        <div class="wc-name" id="wc-name">—</div>
+        <div class="wc-role" id="wc-role">—</div>
+      </div>
+      <div class="year-bar">
+        <div>
+          <div class="yb-label">Année scolaire</div>
+          <div class="yb-val" id="cur-year">2025-2026</div>
+        </div>
+        <div class="yb-btns">
+          <button class="ybb" onclick="changeYear(-1)">◀</button>
+          <button class="ybb on" onclick="changeYear(0)">Actuelle</button>
+          <button class="ybb" onclick="changeYear(1)">▶</button>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num" id="s-total">0</div><div class="stat-lbl">Total étudiants</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-new" style="color:#2E7D32">0</div><div class="stat-lbl">Nouveaux</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-f" style="color:#9B3A50">0</div><div class="stat-lbl">Femmes</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-m" style="color:#2A4A8B">0</div><div class="stat-lbl">Hommes</div></div>
+      </div>
+      <div class="section-title">Répartition par niveau</div>
+      <div id="level-stats"></div>
+    </div>
+  </div>
+
+  <!-- PAGE: ÉTUDIANTS -->
+  <div id="pg-students" class="page">
+    <div class="pcont">
+      <div class="filters" id="student-filters">
+        <div class="fchip on" onclick="setStudFilter('all',this)">Tous</div>
+        <div class="fchip" onclick="setStudFilter('nouveau',this)">Nouveaux</div>
+        <div class="fchip" onclick="setStudFilter('promu',this)">Promus</div>
+      </div>
+      <div class="section-title">
+        <span>Étudiants</span>
+        <span class="badge" id="stud-count">0</span>
+      </div>
+      <div id="stud-list"></div>
+    </div>
+    <button class="fab" onclick="openModal('add-stud-modal')" id="add-stud-fab">+</button>
+  </div>
+
+  <!-- PAGE: CONFIGURATION -->
+  <div id="pg-config" class="page">
+    <div class="pcont">
+      <!-- Professors -->
+      <div class="section-title">
+        <span>👨‍🏫 Professeurs</span>
+        <button onclick="openModal('add-prof-modal')" style="background:var(--purple);color:#fff;border:none;padding:4px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif" id="btn-add-prof">+ Ajouter</button>
+      </div>
+      <div id="prof-list"></div>
+
+      <!-- Levels -->
+      <div class="section-title" style="margin-top:20px">
+        <span>📚 Niveaux</span>
+        <button onclick="openModal('add-level-modal')" style="background:var(--purple);color:#fff;border:none;padding:4px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif" id="btn-add-level">+ Ajouter</button>
+      </div>
+      <div id="level-list"></div>
+
+      <!-- Groups -->
+      <div class="section-title" style="margin-top:20px">
+        <span>🗓 Groupes / Créneaux</span>
+        <button onclick="openModal('add-group-modal')" style="background:var(--purple);color:#fff;border:none;padding:4px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif" id="btn-add-group">+ Ajouter</button>
+      </div>
+      <div id="group-list"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bnav">
+    <button class="bn active" onclick="showPage('home',this)">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Accueil
+    </button>
+    <button class="bn" onclick="showPage('students',this)">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Étudiants
+    </button>
+    <button class="bn" id="btn-config" onclick="showPage('config',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Config
+    </button>
+  </div>
+</div>
+
+<!-- ── MODALS ── -->
+
+<!-- ADD STUDENT -->
+<div class="modal-overlay" id="add-stud-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">➕ Ajouter un étudiant</div>
+      <button class="modal-close" onclick="closeModal('add-stud-modal')">✕</button>
+    </div>
+    <div class="field"><label>Prénom *</label><input class="finp" id="as-pre" type="text" placeholder="Prénom"/></div>
+    <div class="field"><label>Nom *</label><input class="finp" id="as-nom" type="text" placeholder="Nom de famille"/></div>
+    <div class="field"><label>Téléphone WhatsApp *</label><input class="finp" id="as-tel" type="tel" placeholder="+33 6 XX XX XX XX"/></div>
+    <div class="field"><label>Email</label><input class="finp" id="as-email" type="email" placeholder="email@exemple.com"/></div>
+    <div class="field"><label>Sexe *</label>
+      <div class="grow">
+        <div class="gopt" id="as-gf" onclick="setAS_G('Femme')">👩 Femme</div>
+        <div class="gopt" id="as-gm" onclick="setAS_G('Homme')">👨 Homme</div>
+      </div>
+    </div>
+    <div class="field"><label>Niveau *</label><select class="fsel" id="as-nv"><option value="">-- Choisir --</option></select></div>
+    <div class="field"><label>Professeur *</label><select class="fsel" id="as-prof"><option value="">-- Choisir --</option></select></div>
+    <div class="field"><label>Groupe / Créneau *</label><select class="fsel" id="as-grp"><option value="">-- Choisir --</option></select></div>
+    <div class="field"><label>Notes</label><input class="finp" id="as-note" type="text" placeholder="Informations supplémentaires..."/></div>
+    <div class="merr" id="as-err">⚠ Remplissez les champs obligatoires</div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-c" onclick="closeModal('add-stud-modal')">Annuler</button>
+      <button class="mbtn mbtn-ok" onclick="saveStudent()">Enregistrer ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROMOTE STUDENT -->
+<div class="modal-overlay" id="promote-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">⬆️ Promouvoir</div>
+      <button class="modal-close" onclick="closeModal('promote-modal')">✕</button>
+    </div>
+    <div style="font-size:13px;color:rgba(26,18,8,.6);margin-bottom:14px">L'étudiant sera promu. Son historique sera conservé.</div>
+    <div class="field"><label>Nouveau niveau</label><select class="fsel" id="pm-nv"><option value="">-- Choisir --</option></select></div>
+    <div class="field"><label>Nouveau professeur</label><select class="fsel" id="pm-prof"><option value="">-- Choisir --</option></select></div>
+    <div class="field"><label>Nouveau groupe</label><select class="fsel" id="pm-grp"><option value="">-- Choisir --</option></select></div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-c" onclick="closeModal('promote-modal')">Annuler</button>
+      <button class="mbtn mbtn-purple" onclick="confirmPromote()">Promouvoir ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="modal-overlay" id="hist-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📋 Historique</div>
+      <button class="modal-close" onclick="closeModal('hist-modal')">✕</button>
+    </div>
+    <div style="font-size:15px;font-weight:600;margin-bottom:12px" id="hist-name"></div>
+    <div id="hist-list"></div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-ok" onclick="closeModal('hist-modal')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PROFESSOR -->
+<div class="modal-overlay" id="add-prof-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">👨‍🏫 Ajouter un professeur</div>
+      <button class="modal-close" onclick="closeModal('add-prof-modal')">✕</button>
+    </div>
+    <div class="field"><label>Nom du professeur *</label><input class="finp" id="ap-nom" type="text" placeholder="ex: Prof. Zakaria"/></div>
+    <div class="field"><label>Mot de passe (pour connexion)</label><input class="finp" id="ap-pw" type="text" placeholder="ex: prof123"/></div>
+    <div class="field"><label>Spécialité</label><input class="finp" id="ap-spec" type="text" placeholder="ex: Langue arabe classique"/></div>
+    <div class="merr" id="ap-err">⚠ Le nom est obligatoire</div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-c" onclick="closeModal('add-prof-modal')">Annuler</button>
+      <button class="mbtn mbtn-ok" onclick="saveProf()">Enregistrer ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD LEVEL -->
+<div class="modal-overlay" id="add-level-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📚 Ajouter un niveau</div>
+      <button class="modal-close" onclick="closeModal('add-level-modal')">✕</button>
+    </div>
+    <div class="field"><label>Nom du niveau *</label><input class="finp" id="al-nom" type="text" placeholder="ex: Niveau 1 — Débutant"/></div>
+    <div class="field"><label>Description</label><input class="finp" id="al-desc" type="text" placeholder="ex: Pour les débutants complets"/></div>
+    <div class="merr" id="al-err">⚠ Le nom est obligatoire</div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-c" onclick="closeModal('add-level-modal')">Annuler</button>
+      <button class="mbtn mbtn-ok" onclick="saveLevel()">Enregistrer ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD GROUP -->
+<div class="modal-overlay" id="add-group-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🗓 Ajouter un groupe</div>
+      <button class="modal-close" onclick="closeModal('add-group-modal')">✕</button>
+    </div>
+    <div class="field"><label>Jour *</label>
+      <select class="fsel" id="ag-day">
+        <option>Dimanche</option><option>Lundi</option><option>Mardi</option>
+        <option>Mercredi</option><option>Jeudi</option><option>Vendredi</option><option>Samedi</option>
+      </select>
+    </div>
+    <div class="field"><label>Horaire *</label><input class="finp" id="ag-time" type="text" placeholder="ex: 10h30 – 12h00"/></div>
+    <div class="field"><label>Genre</label>
+      <select class="fsel" id="ag-genre">
+        <option>Femmes</option><option>Hommes</option><option>Mixte</option>
+      </select>
+    </div>
+    <div class="field"><label>Salle / Lieu</label><input class="finp" id="ag-lieu" type="text" placeholder="ex: Salle A"/></div>
+    <div class="modal-btns">
+      <button class="mbtn mbtn-c" onclick="closeModal('add-group-modal')">Annuler</button>
+      <button class="mbtn mbtn-ok" onclick="saveGroup()">Enregistrer ✓</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getDatabase,ref,push,onValue,remove,update}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const FC={apiKey:"AIzaSyC9WsBwhpG-UdM62Xa1BiZjW8gL74rAv34",authDomain:"parle-arabe.firebaseapp.com",databaseURL:"https://parle-arabe-default-rtdb.europe-west1.firebasedatabase.app",projectId:"parle-arabe",storageBucket:"parle-arabe.firebasestorage.app",messagingSenderId:"985415763625",appId:"1:985415763625:web:e9727341e4110572180bb8"};
+
+// ACCOUNTS — admin + professors
+const ACCOUNTS={
+  'zakaria':{pw:'noor2024',role:'admin',name:'Zakaria Gourari'},
+};
+
+const CL=[{bg:'#EEEDFE',fg:'#3C3489'},{bg:'#E1F5EE',fg:'#085041'},{bg:'#FAECE7',fg:'#712B13'},{bg:'#E6F1FB',fg:'#0C447C'},{bg:'#FAEEDA',fg:'#633806'},{bg:'#EAF3DE',fg:'#27500A'}];
+function cFor(n){let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))%CL.length;return CL[h]}
+function ini(n){const p=n.trim().split(' ');return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():n.slice(0,2).toUpperCase()}
+function now(){return new Date().toLocaleDateString('fr-FR')}
+
+const appFb=initializeApp(FC);const db=getDatabase(appFb);
+let curUser=null,curYear='2025-2026',studFilter='all',promoteKey=null;
+let allStudents=[],allProfs=[],allLevels=[],allGroups=[],asG='';
+
+// ── LOGIN ──
+window.setRole=r=>{document.getElementById('rb-admin').classList.toggle('on',r==='admin');document.getElementById('rb-prof').classList.toggle('on',r==='prof');};
+
+window.doLogin=()=>{
+  const u=document.getElementById('l-user').value.trim().toLowerCase();
+  const p=document.getElementById('l-pw').value;
+  // Check static accounts
+  if(ACCOUNTS[u]&&ACCOUNTS[u].pw===p){
+    curUser=ACCOUNTS[u];curUser.username=u;
+    startApp();return;
+  }
+  // Check dynamic professor accounts
+  const prof=allProfs.find(x=>x.nom&&x.nom.toLowerCase().replace('prof. ','')===u&&x.pw===p);
+  if(prof){curUser={role:'prof',name:prof.nom,username:u};startApp();return;}
+  document.getElementById('l-err').style.display='block';
+};
+
+function startApp(){
+  document.getElementById('l-err').style.display='none';
+  document.getElementById('app-user').textContent=curUser.name;
+  document.getElementById('wc-name').textContent=curUser.name;
+  document.getElementById('wc-role').textContent=curUser.role==='admin'?'Administrateur':'Professeur';
+  // Hide config for professors
+  document.getElementById('btn-config').style.display=curUser.role==='admin'?'flex':'none';
+  document.getElementById('add-stud-fab').style.display='flex';
+  document.getElementById('login').classList.remove('active');
+  document.getElementById('app').classList.add('active');
+  loadAll();
+}
+
+window.signOut=()=>{curUser=null;document.getElementById('app').classList.remove('active');document.getElementById('login').classList.add('active');document.getElementById('l-pw').value='';showPage('home',document.querySelector('.bn'));};
+
+function loadAll(){
+  onValue(ref(db,'noor_students'),snap=>{allStudents=[];snap.forEach(c=>{const v=c.val();v._k=c.key;allStudents.push(v);});allStudents.sort((a,b)=>b.ts-a.ts);updateStats();renderStudents();renderLevelStats();});
+  onValue(ref(db,'noor_profs'),snap=>{allProfs=[];snap.forEach(c=>{const v=c.val();v._k=c.key;allProfs.push(v);});renderProfs();populateSelects();});
+  onValue(ref(db,'noor_levels'),snap=>{allLevels=[];snap.forEach(c=>{const v=c.val();v._k=c.key;allLevels.push(v);});renderLevels();populateSelects();});
+  onValue(ref(db,'noor_groups'),snap=>{allGroups=[];snap.forEach(c=>{const v=c.val();v._k=c.key;allGroups.push(v);});renderGroups();populateSelects();});
+}
+
+function populateSelects(){
+  ['as-nv','pm-nv'].forEach(id=>{const s=document.getElementById(id);const v=s.value;s.innerHTML='<option value="">-- Choisir --</option>';allLevels.forEach(l=>s.innerHTML+=`<option ${v===l.nom?'selected':''}>${l.nom}</option>`);});
+  ['as-prof','pm-prof'].forEach(id=>{const s=document.getElementById(id);const v=s.value;s.innerHTML='<option value="">-- Choisir --</option>';allProfs.forEach(p=>s.innerHTML+=`<option ${v===p.nom?'selected':''}>${p.nom}</option>`);});
+  ['as-grp','pm-grp'].forEach(id=>{const s=document.getElementById(id);const v=s.value;s.innerHTML='<option value="">-- Choisir --</option>';allGroups.forEach(g=>{const label=g.jour+' · '+g.genre+' · '+g.horaire;s.innerHTML+=`<option ${v===label?'selected':''}>${label}</option>`;});});
+}
+
+// ── STATS ──
+function updateStats(){
+  const f=curYear==='all'?allStudents:allStudents.filter(s=>s.annee===curYear);
+  document.getElementById('s-total').textContent=f.length;
+  document.getElementById('s-new').textContent=f.filter(s=>s.statut==='nouveau').length;
+  document.getElementById('s-f').textContent=f.filter(s=>s.sexe==='Femme').length;
+  document.getElementById('s-m').textContent=f.filter(s=>s.sexe==='Homme').length;
+}
+
+function renderLevelStats(){
+  const c=document.getElementById('level-stats');c.innerHTML='';
+  const f=allStudents.filter(s=>s.annee===curYear);
+  const map={};f.forEach(s=>{const k=s.niveau||'—';map[k]=(map[k]||0)+1;});
+  if(!Object.keys(map).length){c.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div>Aucune donnée</div></div>';return;}
+  Object.entries(map).sort((a,b)=>b[1]-a[1]).forEach(([nv,cnt])=>{
+    const cl=cFor(nv);const d=document.createElement('div');d.className='setup-card';
+    d.innerHTML=`<div class="setup-icon" style="background:${cl.bg};color:${cl.fg};font-size:14px;font-weight:700">${cnt}</div>
+      <div class="setup-info"><div class="setup-name">${nv}</div><div class="setup-sub">${cnt} étudiant${cnt>1?'s':''}</div></div>`;
+    c.appendChild(d);
+  });
+}
+
+window.changeYear=(dir)=>{
+  if(dir===0)curYear='2025-2026';
+  else{const p=curYear.split('-');const y=parseInt(p[0])+dir;curYear=y+'-'+(y+1);}
+  document.getElementById('cur-year').textContent=curYear;
+  updateStats();renderStudents();renderLevelStats();
+};
+
+// ── STUDENTS ──
+window.setStudFilter=(f,btn)=>{studFilter=f;document.querySelectorAll('#student-filters .fchip').forEach(c=>c.classList.remove('on'));btn.classList.add('on');renderStudents();};
+
+function renderStudents(){
+  const l=document.getElementById('stud-list');
+  let fl=allStudents.filter(s=>s.annee===curYear);
+  if(studFilter==='nouveau')fl=fl.filter(s=>s.statut==='nouveau');
+  if(studFilter==='promu')fl=fl.filter(s=>s.statut==='promu');
+  // professors see only their students
+  if(curUser&&curUser.role==='prof')fl=fl.filter(s=>s.prof===curUser.name);
+  document.getElementById('stud-count').textContent=fl.length;
+  l.innerHTML='';
+  if(!fl.length){l.innerHTML='<div class="empty"><div class="empty-icon">👥</div><div>Aucun étudiant</div></div>';return;}
+  fl.forEach(s=>{
+    const cl=cFor(s.prenom+s.nom);const isAdmin=curUser&&curUser.role==='admin';
+    const d=document.createElement('div');d.className='card';
+    d.innerHTML=`<div class="card-top">
+      <div class="av" style="background:${cl.bg};color:${cl.fg}">${ini(s.prenom+' '+s.nom)}</div>
+      <div class="card-info">
+        <div class="card-name">${s.prenom} ${s.nom}</div>
+        <div class="card-sub">📞 ${s.tel}</div>
+        <div class="card-badges">
+          <span class="cbdg cnv">${s.niveau||'—'}</span>
+          <span class="cbdg ${s.sexe==='Femme'?'cgf':'cgm'}">${s.sexe||'—'}</span>
+          <span class="cbdg ${s.statut==='nouveau'?'cnew':'cprom'}">${s.statut==='nouveau'?'Nouveau':'Promu'}</span>
+        </div>
+        <div class="card-sub" style="margin-top:4px">👨‍🏫 ${s.prof||'—'} · ⏰ ${s.groupe?s.groupe.split('·').slice(1).join('·'):'—'}</div>
+        ${s.notes?`<div class="card-sub" style="margin-top:2px">📝 ${s.notes}</div>`:''}
+      </div>
+    </div>
+    <div class="card-actions">
+      ${isAdmin?`<button class="ca-btn ca-promote" onclick="openPromote('${s._k}','${s.niveau||''}')">⬆️ Promouvoir</button>`:''}
+      <button class="ca-btn ca-hist" onclick="showHistory('${s._k}')">📋 Historique</button>
+      <button class="ca-btn ca-wa" onclick="cWA('${s.tel}','${s.prenom}')">📱 WA</button>
+      ${isAdmin?`<button class="ca-btn ca-del" onclick="delStud('${s._k}')">🗑</button>`:''}
+    </div>`;
+    l.appendChild(d);
+  });
+}
+
+window.setAS_G=g=>{asG=g;document.getElementById('as-gf').classList.toggle('on',g==='Femme');document.getElementById('as-gm').classList.toggle('on',g==='Homme');};
+
+window.saveStudent=async()=>{
+  const pre=document.getElementById('as-pre').value.trim(),nom=document.getElementById('as-nom').value.trim(),tel=document.getElementById('as-tel').value.trim();
+  const nv=document.getElementById('as-nv').value,prof=document.getElementById('as-prof').value,grp=document.getElementById('as-grp').value;
+  if(!pre||!nom||!tel||!nv||!prof){document.getElementById('as-err').style.display='block';return;}
+  document.getElementById('as-err').style.display='none';
+  const s={prenom:pre,nom,tel,email:document.getElementById('as-email').value.trim(),sexe:asG||'—',niveau:nv,prof,groupe:grp,annee:curYear,notes:document.getElementById('as-note').value.trim(),ts:Date.now(),statut:'nouveau',historique:[{annee:curYear,niveau:nv,prof,groupe:grp,date:now()}]};
+  await push(ref(db,'noor_students'),s);
+  closeModal('add-stud-modal');
+  ['as-pre','as-nom','as-tel','as-email','as-note'].forEach(id=>document.getElementById(id).value='');
+  asG='';document.getElementById('as-gf').classList.remove('on');document.getElementById('as-gm').classList.remove('on');
+  document.getElementById('as-nv').value='';document.getElementById('as-prof').value='';document.getElementById('as-grp').value='';
+};
+
+window.openPromote=(key,currentLevel)=>{
+  promoteKey=key;
+  const idx=allLevels.findIndex(l=>l.nom===currentLevel);
+  const next=allLevels[Math.min(idx+1,allLevels.length-1)];
+  if(next)document.getElementById('pm-nv').value=next.nom;
+  openModal('promote-modal');
+};
+
+window.confirmPromote=async()=>{
+  if(!promoteKey)return;
+  const s=allStudents.find(x=>x._k===promoteKey);if(!s)return;
+  const p=curYear.split('-');const nextYear=(parseInt(p[0])+1)+'-'+(parseInt(p[1])+1);
+  const nv=document.getElementById('pm-nv').value,prof=document.getElementById('pm-prof').value,grp=document.getElementById('pm-grp').value;
+  const hist=[...(s.historique||[]),{annee:nextYear,niveau:nv,prof,groupe:grp,date:now()}];
+  await update(ref(db,'noor_students/'+promoteKey),{niveau:nv,prof,groupe:grp,annee:nextYear,statut:'promu',historique:hist});
+  closeModal('promote-modal');
+};
+
+window.showHistory=key=>{
+  const s=allStudents.find(x=>x._k===key);if(!s)return;
+  document.getElementById('hist-name').textContent=s.prenom+' '+s.nom;
+  const hist=s.historique||[{annee:s.annee,niveau:s.niveau,prof:s.prof,groupe:s.groupe}];
+  document.getElementById('hist-list').innerHTML=hist.map(h=>`
+    <div class="hist-item">
+      <div>
+        <div class="hist-year">${h.annee||'—'}</div>
+        <div class="hist-nv">${h.niveau||'—'}</div>
+        <div class="hist-det">👨‍🏫 ${h.prof||'—'} · ${h.groupe?h.groupe.split('·').slice(1).join('·'):'—'}</div>
+      </div>
+      <div class="hist-date">${h.date||''}</div>
+    </div>`).join('');
+  openModal('hist-modal');
+};
+
+window.delStud=async k=>{if(confirm('Supprimer définitivement?'))await remove(ref(db,'noor_students/'+k));};
+window.cWA=(tel,prenom)=>{window.open('https://wa.me/'+tel.replace(/[\s+]/g,'')+'?text='+encodeURIComponent('Salam '+prenom+', votre inscription à Institut Noor a été confirmée. Bienvenue! 🎉'));};
+
+// ── CONFIG ──
+window.saveProf=async()=>{
+  const nom=document.getElementById('ap-nom').value.trim();if(!nom){document.getElementById('ap-err').style.display='block';return;}
+  await push(ref(db,'noor_profs'),{nom,pw:document.getElementById('ap-pw').value.trim(),spec:document.getElementById('ap-spec').value.trim(),ts:Date.now()});
+  closeModal('add-prof-modal');['ap-nom','ap-pw','ap-spec'].forEach(id=>document.getElementById(id).value='');
+};
+
+window.saveLevel=async()=>{
+  const nom=document.getElementById('al-nom').value.trim();if(!nom){document.getElementById('al-err').style.display='block';return;}
+  await push(ref(db,'noor_levels'),{nom,desc:document.getElementById('al-desc').value.trim(),ts:Date.now()});
+  closeModal('add-level-modal');['al-nom','al-desc'].forEach(id=>document.getElementById(id).value='');
+};
+
+window.saveGroup=async()=>{
+  const jour=document.getElementById('ag-day').value,horaire=document.getElementById('ag-time').value.trim();
+  await push(ref(db,'noor_groups'),{jour,horaire,genre:document.getElementById('ag-genre').value,lieu:document.getElementById('ag-lieu').value.trim(),ts:Date.now()});
+  closeModal('add-group-modal');['ag-time','ag-lieu'].forEach(id=>document.getElementById(id).value='');
+};
+
+function renderProfs(){
+  const l=document.getElementById('prof-list');l.innerHTML='';
+  if(!allProfs.length){l.innerHTML='<div class="empty"><div class="empty-icon">👨‍🏫</div><div>Aucun professeur</div></div>';return;}
+  allProfs.forEach(p=>{
+    const cl=cFor(p.nom);const d=document.createElement('div');d.className='setup-card';
+    d.innerHTML=`<div class="setup-icon" style="background:${cl.bg};color:${cl.fg}">${ini(p.nom)}</div>
+      <div class="setup-info"><div class="setup-name">${p.nom}</div><div class="setup-sub">${p.spec||'Professeur'}</div></div>
+      <div class="setup-actions"><button class="sa sa-d" onclick="delItem('noor_profs','${p._k}')">🗑</button></div>`;
+    l.appendChild(d);
+  });
+}
+
+function renderLevels(){
+  const l=document.getElementById('level-list');l.innerHTML='';
+  if(!allLevels.length){l.innerHTML='<div class="empty"><div class="empty-icon">📚</div><div>Aucun niveau</div></div>';return;}
+  allLevels.forEach(lv=>{
+    const d=document.createElement('div');d.className='setup-card';
+    d.innerHTML=`<div class="setup-icon" style="background:var(--pl);color:var(--purple);font-size:13px;font-weight:700">Nv</div>
+      <div class="setup-info"><div class="setup-name">${lv.nom}</div><div class="setup-sub">${lv.desc||'—'}</div></div>
+      <div class="setup-actions"><button class="sa sa-d" onclick="delItem('noor_levels','${lv._k}')">🗑</button></div>`;
+    l.appendChild(d);
+  });
+}
+
+function renderGroups(){
+  const l=document.getElementById('group-list');l.innerHTML='';
+  if(!allGroups.length){l.innerHTML='<div class="empty"><div class="empty-icon">🗓</div><div>Aucun groupe</div></div>';return;}
+  allGroups.forEach(g=>{
+    const d=document.createElement('div');d.className='setup-card';
+    d.innerHTML=`<div class="setup-icon" style="background:var(--tl);color:var(--teal);font-size:11px;font-weight:700">${g.jour?g.jour.slice(0,3).toUpperCase():'GRP'}</div>
+      <div class="setup-info"><div class="setup-name">${g.jour} · ${g.genre}</div><div class="setup-sub">⏰ ${g.horaire||'—'} ${g.lieu?'· 📍'+g.lieu:''}</div></div>
+      <div class="setup-actions"><button class="sa sa-d" onclick="delItem('noor_groups','${g._k}')">🗑</button></div>`;
+    l.appendChild(d);
+  });
+}
+
+window.delItem=async(path,key)=>{if(confirm('Supprimer?'))await remove(ref(db,path+'/'+key));};
+
+// ── NAVIGATION ──
+window.showPage=(name,btn)=>{
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pg-'+name).classList.add('active');
+  btn.classList.add('active');
+};
+
+window.openModal=id=>document.getElementById(id).classList.add('open');
+window.closeModal=id=>document.getElementById(id).classList.remove('open');
+
+// Load profs for login check
+onValue(ref(db,'noor_profs'),snap=>{allProfs=[];snap.forEach(c=>{const v=c.val();v._k=c.key;allProfs.push(v);});});
+</script>
+</body>
+</html>

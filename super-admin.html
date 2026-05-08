@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a1040">
+<title>Super Admin — Institut Noor</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#C9A84C;--gd:#8B6914;--ink:#1A1208;--cream:#FBF7F0;--purple:#534AB7;--pl:#EEEDFE;--teal:#1D7A6B;--tl:#E0F2EE;--rose:#C4545A;--rl:#FAEAEA;--bd:rgba(201,168,76,.18);--surface:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:#F0F2F8;color:var(--ink)}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+#login{align-items:center;justify-content:center;background:linear-gradient(160deg,#0D0820,#1a1040,#0D1A12);padding:32px 20px;min-height:100vh}
+.brand{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--gold);text-align:center}
+.brand-sub{font-size:12px;color:rgba(255,255,255,.4);text-align:center;margin:4px 0 24px;letter-spacing:.1em;text-transform:uppercase}
+.lcard{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:22px;width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px}
+.fl{font-size:11px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase}
+.ti{width:100%;padding:11px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:15px;font-family:'DM Sans',sans-serif;outline:none}
+.ti:focus{border-color:rgba(201,168,76,.6)}
+.ti::placeholder{color:rgba(255,255,255,.3)}
+.lbtn{width:100%;padding:13px;border-radius:10px;background:linear-gradient(135deg,var(--gd),var(--gold));border:none;color:#fff;font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer}
+.lerr{font-size:12px;color:#ff8fa3;text-align:center;display:none}
+#app{background:#F0F2F8}
+.atop{background:linear-gradient(135deg,#0D0820,#1a1040);color:#fff;padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.atop-logo{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--gold)}
+.atop-sub{font-size:11px;color:rgba(255,255,255,.5);flex:1}
+.asout{background:rgba(255,255,255,.1);border:none;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.pcont{padding:16px;max-width:520px;margin:0 auto;width:100%;flex:1;overflow-y:auto}
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.scard{background:var(--surface);border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.snum{font-size:28px;font-weight:700;color:var(--purple)}
+.slbl{font-size:12px;color:rgba(26,18,8,.5);margin-top:3px}
+.sec-hdr{font-size:13px;font-weight:600;color:rgba(26,18,8,.5);margin:16px 0 10px;display:flex;align-items:center;justify-content:space-between;letter-spacing:.04em;text-transform:uppercase}
+.add-btn-sm{background:var(--purple);color:#fff;border:none;padding:5px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.inst-card{background:var(--surface);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.ic-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ic-av{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0}
+.ic-info{flex:1}
+.ic-name{font-size:15px;font-weight:700;color:var(--ink)}
+.ic-sub{font-size:12px;color:rgba(26,18,8,.5);margin-top:2px}
+.ic-status{font-size:11px;padding:3px 8px;border-radius:8px;font-weight:600;margin-top:4px;display:inline-block}
+.active-st{background:#E8F5E9;color:#2E7D32}
+.inactive-st{background:var(--rl);color:var(--rose)}
+.ic-creds{background:var(--cream);border-radius:10px;padding:10px;margin-bottom:10px;font-size:13px}
+.cred-row{display:flex;justify-content:space-between;padding:3px 0}
+.cred-lbl{color:rgba(26,18,8,.5)}
+.cred-val{font-weight:600;color:var(--ink);font-family:monospace;font-size:13px}
+.ic-actions{display:flex;gap:6px}
+.ia{flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif}
+.ia-view{background:var(--pl);color:var(--purple)}
+.ia-toggle{background:var(--tl);color:var(--teal)}
+.ia-del{background:var(--rl);color:var(--rose)}
+.ic-stats{display:flex;gap:8px;margin-bottom:10px}
+.ics{flex:1;background:var(--cream);border-radius:8px;padding:8px;text-align:center}
+.ics-num{font-size:18px;font-weight:700;color:var(--purple)}
+.ics-lbl{font-size:10px;color:rgba(26,18,8,.5);margin-top:1px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto}
+.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.mtitle{font-family:'Playfair Display',serif;font-size:17px;font-weight:700}
+.mclose{width:28px;height:28px;border-radius:50%;background:rgba(26,18,8,.08);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.field{margin-bottom:12px}
+.field label{font-size:11px;font-weight:600;color:rgba(26,18,8,.5);letter-spacing:.04em;display:block;margin-bottom:5px;text-transform:uppercase}
+.finp,.fsel{width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid var(--bd);background:var(--cream);color:var(--ink);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.finp:focus,.fsel:focus{border-color:var(--gold)}
+.finp::placeholder{color:rgba(26,18,8,.3)}
+.mbtns{display:flex;gap:8px;margin-top:16px}
+.mbtn{flex:1;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+.mbtn-c{background:rgba(26,18,8,.08);color:var(--ink)}
+.mbtn-ok{background:linear-gradient(135deg,var(--gd),var(--gold));color:#fff}
+.merr{font-size:12px;color:var(--rose);margin-top:8px;display:none}
+.inst-detail{display:none;position:fixed;inset:0;background:#F0F2F8;z-index:200;flex-direction:column}
+.inst-detail.open{display:flex}
+.id-top{background:linear-gradient(135deg,#0D0820,#1a1040);color:#fff;padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;flex-shrink:0}
+.id-back{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+.id-name{font-size:16px;font-weight:700;flex:1}
+.id-content{padding:16px;flex:1;overflow-y:auto;max-width:520px;margin:0 auto;width:100%}
+.stud-card{background:var(--surface);border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 2px 6px rgba(0,0,0,.04);display:flex;align-items:center;gap:10px}
+.st-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.st-info{flex:1}
+.st-name{font-size:14px;font-weight:600}
+.st-sub{font-size:12px;color:rgba(26,18,8,.5);margin-top:2px}
+.st-bdgs{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.stbdg{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500}
+.bnv{background:var(--pl);color:var(--purple)}
+.bgf{background:#FAEDF0;color:#9B3A50}
+.bgm{background:#EAF0FA;color:#2A4A8B}
+.empty{text-align:center;padding:40px 20px;color:rgba(26,18,8,.4)}
+.copy-btn{background:var(--pl);border:none;color:var(--purple);padding:3px 8px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-right:4px}
+.CL=[{bg:'#EEEDFE',fg:'#3C3489'},{bg:'#E1F5EE',fg:'#085041'},{bg:'#FAECE7',fg:'#712B13'},{bg:'#E6F1FB',fg:'#0C447C'},{bg:'#FAEEDA',fg:'#633806'},{bg:'#EAF3DE',fg:'#27500A'}]
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="screen active">
+  <div class="brand">🔐 Super Admin</div>
+  <div class="brand-sub">Institut Noor — Panneau de contrôle</div>
+  <div class="lcard">
+    <div><div class="fl">Mot de passe maître</div>
+    <input class="ti" id="mpw" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="lerr" id="merr">⚠ Mot de passe incorrect</div>
+    <button class="lbtn" onclick="doLogin()">Accéder →</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="screen">
+  <div class="atop">
+    <div>
+      <div class="atop-logo">🔐 Super Admin</div>
+      <div class="atop-sub">Institut Noor</div>
+    </div>
+    <button class="asout" onclick="signOut()">Déconnexion</button>
+  </div>
+  <div class="pcont">
+    <div class="sgrid">
+      <div class="scard"><div class="snum" id="st-inst">0</div><div class="slbl">Institutions</div></div>
+      <div class="scard"><div class="snum" id="st-actif" style="color:#2E7D32">0</div><div class="slbl">Actives</div></div>
+      <div class="scard"><div class="snum" id="st-studs" style="color:var(--purple)">0</div><div class="slbl">Total étudiants</div></div>
+      <div class="scard"><div class="snum" id="st-rev" style="color:var(--gold)">0€</div><div class="slbl">Revenus/mois</div></div>
+    </div>
+
+    <div class="sec-hdr">
+      <span>🏫 Institutions</span>
+      <button class="add-btn-sm" onclick="openModal('add-inst-modal')">+ Ajouter</button>
+    </div>
+    <div id="inst-list"></div>
+  </div>
+</div>
+
+<!-- INSTITUTION DETAIL -->
+<div class="inst-detail" id="inst-detail">
+  <div class="id-top">
+    <button class="id-back" onclick="closeDetail()">←</button>
+    <div class="id-name" id="detail-name"></div>
+  </div>
+  <div class="id-content">
+    <div class="sgrid" style="margin-bottom:14px">
+      <div class="scard"><div class="snum" id="d-total">0</div><div class="slbl">Étudiants</div></div>
+      <div class="scard"><div class="snum" id="d-new" style="color:#2E7D32">0</div><div class="slbl">Nouveaux</div></div>
+    </div>
+    <div class="sec-hdr"><span>Liste des étudiants</span><span id="d-badge" style="background:var(--purple);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600">0</span></div>
+    <div id="detail-studs"></div>
+  </div>
+</div>
+
+<!-- ADD INSTITUTION MODAL -->
+<div class="modal-overlay" id="add-inst-modal">
+  <div class="modal">
+    <div class="mhdr">
+      <div class="mtitle">🏫 Nouvelle institution</div>
+      <button class="mclose" onclick="closeModal('add-inst-modal')">✕</button>
+    </div>
+    <div class="field"><label>Nom de l'institution *</label><input class="finp" id="ai-nom" type="text" placeholder="ex: Centre Islamique de Lyon"/></div>
+    <div class="field"><label>Ville</label><input class="finp" id="ai-ville" type="text" placeholder="ex: Lyon"/></div>
+    <div class="field"><label>Nom d'utilisateur *</label><input class="finp" id="ai-user" type="text" placeholder="ex: centre-lyon"/></div>
+    <div class="field"><label>Mot de passe *</label><input class="finp" id="ai-pw" type="text" placeholder="ex: lyon2024"/></div>
+    <div class="field"><label>Abonnement mensuel (€)</label><input class="finp" id="ai-price" type="number" placeholder="50"/></div>
+    <div class="merr" id="ai-err">⚠ Remplissez les champs obligatoires</div>
+    <div class="mbtns">
+      <button class="mbtn mbtn-c" onclick="closeModal('add-inst-modal')">Annuler</button>
+      <button class="mbtn mbtn-ok" onclick="saveInst()">Créer ✓</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getDatabase,ref,push,onValue,remove,update}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const FC={apiKey:"AIzaSyC9WsBwhpG-UdM62Xa1BiZjW8gL74rAv34",authDomain:"parle-arabe.firebaseapp.com",databaseURL:"https://parle-arabe-default-rtdb.europe-west1.firebasedatabase.app",projectId:"parle-arabe",storageBucket:"parle-arabe.firebasestorage.app",messagingSenderId:"985415763625",appId:"1:985415763625:web:e9727341e4110572180bb8"};
+
+// 🔑 MOT DE PASSE MAÎTRE — CHANGEZ-LE!
+const MASTER_PW = 'zakaria-super-2024';
+
+const CL=[{bg:'#EEEDFE',fg:'#3C3489'},{bg:'#E1F5EE',fg:'#085041'},{bg:'#FAECE7',fg:'#712B13'},{bg:'#E6F1FB',fg:'#0C447C'},{bg:'#FAEEDA',fg:'#633806'},{bg:'#EAF3DE',fg:'#27500A'}];
+function cFor(n){let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))%CL.length;return CL[h]}
+function ini(n){const p=n.trim().split(' ');return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():n.slice(0,2).toUpperCase()}
+
+const appFb=initializeApp(FC);const db=getDatabase(appFb);
+let allInst=[],allStudents=[],curDetailInst=null;
+
+window.doLogin=()=>{
+  if(document.getElementById('mpw').value===MASTER_PW){
+    document.getElementById('merr').style.display='none';
+    document.getElementById('login').classList.remove('active');
+    document.getElementById('app').classList.add('active');
+    loadAll();
+  }else{document.getElementById('merr').style.display='block';}
+};
+
+window.signOut=()=>{
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('login').classList.add('active');
+  document.getElementById('mpw').value='';
+};
+
+function loadAll(){
+  onValue(ref(db,'noor_institutions'),snap=>{
+    allInst=[];snap.forEach(c=>{const v=c.val();v._k=c.key;allInst.push(v);});
+    renderInst();updateStats();
+  });
+  onValue(ref(db,'noor_inst_students'),snap=>{
+    allStudents=[];snap.forEach(c=>{const v=c.val();v._k=c.key;allStudents.push(v);});
+    updateStats();
+    if(curDetailInst)renderDetail(curDetailInst);
+  });
+}
+
+function updateStats(){
+  document.getElementById('st-inst').textContent=allInst.length;
+  document.getElementById('st-actif').textContent=allInst.filter(i=>i.active!==false).length;
+  document.getElementById('st-studs').textContent=allStudents.length;
+  const rev=allInst.filter(i=>i.active!==false).reduce((s,i)=>s+(parseFloat(i.price)||0),0);
+  document.getElementById('st-rev').textContent=rev+'€';
+}
+
+function renderInst(){
+  const l=document.getElementById('inst-list');l.innerHTML='';
+  if(!allInst.length){l.innerHTML='<div class="empty"><div style="font-size:36px;margin-bottom:10px">🏫</div><div>Aucune institution</div></div>';return;}
+  allInst.forEach(inst=>{
+    const cl=cFor(inst.nom);
+    const studs=allStudents.filter(s=>s.instId===inst._k);
+    const isActive=inst.active!==false;
+    const d=document.createElement('div');d.className='inst-card';
+    d.innerHTML=`
+      <div class="ic-top">
+        <div class="ic-av" style="background:${cl.bg};color:${cl.fg}">${ini(inst.nom)}</div>
+        <div class="ic-info">
+          <div class="ic-name">${inst.nom}</div>
+          <div class="ic-sub">📍 ${inst.ville||'—'} · 💶 ${inst.price||0}€/mois</div>
+          <span class="ic-status ${isActive?'active-st':'inactive-st'}">${isActive?'✅ Actif':'⛔ Suspendu'}</span>
+        </div>
+      </div>
+      <div class="ic-stats">
+        <div class="ics"><div class="ics-num">${studs.length}</div><div class="ics-lbl">Étudiants</div></div>
+        <div class="ics"><div class="ics-num">${studs.filter(s=>s.statut==='nouveau').length}</div><div class="ics-lbl">Nouveaux</div></div>
+        <div class="ics"><div class="ics-num">${studs.filter(s=>s.sexe==='Femme').length}</div><div class="ics-lbl">Femmes</div></div>
+        <div class="ics"><div class="ics-num">${studs.filter(s=>s.sexe==='Homme').length}</div><div class="ics-lbl">Hommes</div></div>
+      </div>
+      <div class="ic-creds">
+        <div class="cred-row"><span class="cred-lbl">Lien</span><span class="cred-val" style="font-size:11px">institut-noor.netlify.app/inst.html</span></div>
+        <div class="cred-row"><span class="cred-lbl">Utilisateur</span><span class="cred-val">${inst.username||'—'}</span></div>
+        <div class="cred-row"><span class="cred-lbl">Mot de passe</span><span class="cred-val">${inst.pw||'—'}</span></div>
+      </div>
+      <div class="ic-actions">
+        <button class="ia ia-view" onclick="showDetail('${inst._k}')">👁 Voir étudiants</button>
+        <button class="ia ia-toggle" onclick="toggleInst('${inst._k}',${isActive})">${isActive?'⛔ Suspendre':'✅ Activer'}</button>
+        <button class="ia ia-del" onclick="delInst('${inst._k}')">🗑</button>
+      </div>`;
+    l.appendChild(d);
+  });
+}
+
+window.saveInst=async()=>{
+  const nom=document.getElementById('ai-nom').value.trim();
+  const user=document.getElementById('ai-user').value.trim();
+  const pw=document.getElementById('ai-pw').value.trim();
+  if(!nom||!user||!pw){document.getElementById('ai-err').style.display='block';return;}
+  document.getElementById('ai-err').style.display='none';
+  await push(ref(db,'noor_institutions'),{nom,ville:document.getElementById('ai-ville').value.trim(),username:user,pw,price:parseFloat(document.getElementById('ai-price').value)||50,active:true,ts:Date.now()});
+  closeModal('add-inst-modal');
+  ['ai-nom','ai-ville','ai-user','ai-pw','ai-price'].forEach(id=>document.getElementById(id).value='');
+};
+
+window.toggleInst=async(key,isActive)=>{
+  await update(ref(db,'noor_institutions/'+key),{active:!isActive});
+};
+
+window.delInst=async key=>{
+  if(confirm('Supprimer cette institution et tous ses étudiants?')){
+    await remove(ref(db,'noor_institutions/'+key));
+    const studs=allStudents.filter(s=>s.instId===key);
+    for(const s of studs)await remove(ref(db,'noor_inst_students/'+s._k));
+  }
+};
+
+window.showDetail=instKey=>{
+  curDetailInst=instKey;
+  const inst=allInst.find(i=>i._k===instKey);
+  if(!inst)return;
+  document.getElementById('detail-name').textContent=inst.nom;
+  renderDetail(instKey);
+  document.getElementById('inst-detail').classList.add('open');
+};
+
+function renderDetail(instKey){
+  const studs=allStudents.filter(s=>s.instId===instKey);
+  document.getElementById('d-total').textContent=studs.length;
+  document.getElementById('d-new').textContent=studs.filter(s=>s.statut==='nouveau').length;
+  document.getElementById('d-badge').textContent=studs.length;
+  const l=document.getElementById('detail-studs');l.innerHTML='';
+  if(!studs.length){l.innerHTML='<div class="empty"><div style="font-size:32px;margin-bottom:8px">👥</div><div>Aucun étudiant</div></div>';return;}
+  studs.forEach(s=>{
+    const cl=cFor(s.prenom+s.nom);
+    const d=document.createElement('div');d.className='stud-card';
+    d.innerHTML=`<div class="st-av" style="background:${cl.bg};color:${cl.fg}">${ini(s.prenom+' '+s.nom)}</div>
+      <div class="st-info">
+        <div class="st-name">${s.prenom} ${s.nom}</div>
+        <div class="st-sub">📞 ${s.tel} · 👨‍🏫 ${s.prof||'—'}</div>
+        <div class="st-bdgs">
+          <span class="stbdg bnv">${s.niveau||'—'}</span>
+          <span class="stbdg ${s.sexe==='Femme'?'bgf':'bgm'}">${s.sexe||'—'}</span>
+        </div>
+      </div>`;
+    l.appendChild(d);
+  });
+}
+
+window.closeDetail=()=>{curDetailInst=null;document.getElementById('inst-detail').classList.remove('open');};
+window.openModal=id=>document.getElementById(id).classList.add('open');
+window.closeModal=id=>document.getElementById(id).classList.remove('open');
+</script>
+</body>
+</html>
