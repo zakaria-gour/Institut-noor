@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#1a1040">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Institut Noor">
+<title>Institut Noor — فصل العربية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Amiri:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#534AB7;--pl:#EEEDFE;--pd:#3C3489;
+  --teal:#1D9E75;--tl:#E1F5EE;
+  --gold:#C9A84C;--gd:#8B6914;
+  --ink:#1A1208;--cream:#FBF7F0;
+  --bg:#f7f6ff;--sf:#fff;--bd:rgba(83,74,183,.13);
+  --t2:#5c5880;--t3:#9896b0;
+  --r:14px;--rs:8px;--safe:env(safe-area-inset-bottom,0px)
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:'Cairo',sans-serif;background:var(--bg);color:var(--ink)}
+
+/* LOGIN */
+.screen{display:none;height:100vh;height:100dvh;flex-direction:column}
+.screen.active{display:flex}
+#login{align-items:center;justify-content:center;background:linear-gradient(160deg,#1a1040,#2d1f7a,#1a3050);padding:20px;overflow-y:auto}
+.login-logo{font-family:'Amiri',serif;font-size:48px;color:var(--gold);text-align:center;margin-bottom:6px}
+.login-title{font-size:24px;font-weight:700;color:#fff;text-align:center;margin-bottom:4px}
+.login-sub{font-size:13px;color:rgba(255,255,255,.6);text-align:center;margin-bottom:24px}
+.lcard{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:22px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px}
+.fl{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase}
+.ti{width:100%;padding:11px 14px;border-radius:var(--rs);border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:15px;font-family:'Cairo',sans-serif;direction:rtl;outline:none}
+.ti:focus{border-color:rgba(255,255,255,.4)}
+.ti::placeholder{color:rgba(255,255,255,.3)}
+.rrow{display:flex;gap:8px}
+.rb{flex:1;padding:10px;border-radius:var(--rs);border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);font-size:13px;font-family:'Cairo',sans-serif;cursor:pointer;text-align:center;transition:all .15s}
+.rb.on{background:var(--purple);border-color:var(--purple);color:#fff;font-weight:600}
+.jbtn{width:100%;padding:13px;border-radius:var(--rs);background:linear-gradient(135deg,#534AB7,#7F77DD);border:none;color:#fff;font-size:16px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer}
+.err{font-size:12px;color:#ff8fa3;text-align:center;display:none}
+
+/* APP */
+#app{background:var(--bg)}
+.atop{background:linear-gradient(135deg,#1a1040,#2d1f7a);color:#fff;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 12px rgba(26,16,64,.3)}
+.atitle{font-size:16px;font-weight:700;flex:1}
+.tbtn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.opill{display:flex;align-items:center;gap:5px;background:rgba(29,158,117,.2);border:1px solid rgba(29,158,117,.35);border-radius:20px;padding:4px 10px;font-size:12px;color:#5DCAA5}
+.gdot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:gp 2s infinite}
+@keyframes gp{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* BOTTOM NAV */
+.bnav{display:flex;background:var(--sf);border-top:1px solid var(--bd);flex-shrink:0;padding-bottom:var(--safe)}
+.bn{flex:1;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:none;color:var(--t3);font-size:10px;font-family:'Cairo',sans-serif;transition:color .15s}
+.bn.active{color:var(--purple)}
+.bn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* PAGES */
+.page{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.page.active{display:flex;flex-direction:column}
+
+/* CHAT */
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+.smsg{text-align:center;font-size:12px;color:var(--t3);background:rgba(83,74,183,.07);border-radius:20px;padding:4px 12px;align-self:center}
+.mrow{display:flex;align-items:flex-end;gap:7px}
+.mrow.me{flex-direction:row-reverse}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.mbody{max-width:72%;display:flex;flex-direction:column}
+.msndr{font-size:11px;font-weight:600;margin-bottom:3px;color:var(--t2)}
+.mrow.me .msndr{text-align:left}
+.bbl{padding:9px 13px;font-size:14px;line-height:1.6;direction:rtl;word-break:break-word}
+.bo{background:var(--sf);color:var(--ink);border-radius:16px 16px 16px 4px;border:1px solid var(--bd)}
+.bm{background:linear-gradient(135deg,#534AB7,#7F77DD);color:#fff;border-radius:16px 16px 4px 16px}
+.bt{background:var(--tl);color:#04342C;border-radius:16px 16px 16px 4px;border:1px solid rgba(29,158,117,.25)}
+.mtime{font-size:10px;color:var(--t3);margin-top:3px}
+.mrow.me .mtime{text-align:left}
+.tbdg{display:inline-block;font-size:10px;background:rgba(29,158,117,.15);color:var(--teal);border:1px solid rgba(29,158,117,.3);padding:1px 6px;border-radius:4px;font-weight:600}
+.iwrap{background:var(--sf);border-top:1px solid var(--bd);padding:10px 12px;padding-bottom:calc(10px + var(--safe));display:flex;align-items:center;gap:8px;flex-shrink:0}
+.cinp{flex:1;padding:10px 16px;border-radius:24px;border:1.5px solid var(--bd);background:var(--bg);color:var(--ink);font-size:15px;font-family:'Cairo',sans-serif;direction:rtl;outline:none}
+.cinp:focus{border-color:var(--purple)}
+.sbtn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#534AB7,#7F77DD);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sbtn svg{width:17px;height:17px;fill:#fff}
+.vbtn{width:40px;height:40px;border-radius:50%;background:var(--tl);border:1.5px solid rgba(29,158,117,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.vbtn.rec{background:#ffebeb;border-color:#ff6b6b;animation:prec 1s infinite}
+@keyframes prec{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+
+/* LESSONS */
+.phdr{padding:16px;background:linear-gradient(135deg,#1a1040,#2d1f7a);color:#fff;flex-shrink:0}
+.pht{font-size:18px;font-weight:700}
+.phs{font-size:13px;color:rgba(255,255,255,.6);margin-top:3px}
+.llist{padding:14px;display:flex;flex-direction:column;gap:10px}
+.lcard{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;cursor:pointer;transition:border-color .15s}
+.lcard:hover{border-color:var(--purple)}
+.lctop{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.lcico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.lct{font-size:15px;font-weight:600;color:var(--ink)}
+.lcs{font-size:12px;color:var(--t3);margin-top:2px}
+.pbar{background:var(--bg);border-radius:4px;height:5px;margin-top:8px}
+.pfill{height:5px;border-radius:4px;background:linear-gradient(90deg,var(--purple),#7F77DD)}
+.ldet{display:none;position:fixed;inset:0;background:var(--sf);z-index:100;flex-direction:column;overflow-y:auto}
+.ldet.open{display:flex}
+.ldhdr{background:linear-gradient(135deg,#1a1040,#2d1f7a);color:#fff;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:12px;flex-shrink:0}
+.bbk{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;cursor:pointer;font-size:18px}
+.ldbody{padding:16px}
+.vcgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.vcard{background:var(--pl);border-radius:var(--rs);padding:12px;text-align:center}
+.vcar{font-size:20px;font-weight:700;color:var(--pd);margin-bottom:4px}
+.vcfr{font-size:13px;color:var(--t2)}
+.spkbtn{width:28px;height:28px;border-radius:50%;background:var(--purple);border:none;cursor:pointer;color:#fff;font-size:12px;margin-top:6px}
+.rbox{background:var(--bg);border-radius:var(--rs);padding:14px;margin-top:10px;border:1px solid var(--bd)}
+.rtitle{font-size:14px;font-weight:600;color:var(--purple);margin-bottom:8px}
+.rtxt{font-size:14px;color:var(--ink);line-height:1.7}
+.exrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd)}
+.stitle{font-size:13px;font-weight:600;color:var(--t2);padding:14px 14px 6px;text-transform:uppercase;letter-spacing:.04em}
+
+/* VOICE */
+.vroom{padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.vrstat{font-size:14px;color:var(--t2);text-align:center}
+.vrusrs{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:10px 0}
+.vruser{display:flex;flex-direction:column;align-items:center;gap:6px}
+.vrav{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;border:3px solid transparent}
+.vrav.spk{border-color:var(--teal)}
+.vrctrl{display:flex;gap:16px;align-items:center}
+.vrbtn{width:64px;height:64px;border-radius:50%;border:none;cursor:pointer;font-size:24px;display:flex;align-items:center;justify-content:center}
+.vrjoin{background:linear-gradient(135deg,var(--teal),#25C48A);color:#fff}
+.vrlv{background:#ffebeb;color:#D63031}
+.vrmute{background:var(--bg);border:1.5px solid var(--bd)}
+
+/* NOURANIA */
+.ntabs{display:flex;background:var(--sf);border-bottom:1px solid var(--bd);overflow-x:auto;flex-shrink:0}
+.ntab{flex-shrink:0;padding:12px 16px;font-size:13px;font-weight:500;color:rgba(26,18,8,.4);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:'Cairo',sans-serif;border-left:none;border-right:none;border-top:none;background:none}
+.ntab.active{color:var(--gd);border-bottom-color:var(--gold);font-weight:600}
+.npage{display:none;padding:14px;overflow-y:auto;flex:1}
+.npage.active{display:block}
+.nlcard{background:var(--sf);border-radius:var(--r);padding:14px;margin-bottom:12px;border:1px solid var(--bd);box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.nlhdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.nlnum{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--gd),var(--gold));color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.arblock{background:linear-gradient(135deg,#FFFDF5,#FFF8E8);border:1.5px solid rgba(201,168,76,.3);border-radius:12px;padding:16px;margin-bottom:12px;text-align:center}
+.artext{font-family:'Amiri',serif;font-size:26px;line-height:2;color:var(--ink);direction:rtl}
+.artext span{cursor:pointer;padding:2px 4px;border-radius:6px;transition:background .15s;display:inline-block}
+.artext span:hover,.artext span.playing{background:rgba(201,168,76,.3);color:var(--gd)}
+.play-row{display:flex;gap:8px;margin-bottom:12px}
+.pbtn{flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:'Cairo',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px}
+.pb-all{background:linear-gradient(135deg,var(--teal),#25C48A);color:#fff}
+.pb-slow{background:var(--tl);color:var(--teal)}
+.pb-stop{background:var(--pl);color:var(--purple)}
+.cchar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.cchar{background:var(--sf);border:1.5px solid var(--bd);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .15s}
+.cchar:hover,.cchar.playing{border-color:var(--gold);background:#FFFDF5}
+.cchar-ar{font-family:'Amiri',serif;font-size:26px;color:var(--ink);margin-bottom:3px}
+.cchar-nm{font-size:10px;color:var(--t2)}
+.cchar-tr{font-size:10px;color:var(--gd);font-weight:600}
+.expl{background:var(--pl);border-radius:10px;padding:12px;margin-bottom:10px;font-size:13px;color:var(--ink);line-height:1.7;direction:rtl}
+.expl-t{font-size:12px;font-weight:700;color:var(--purple);margin-bottom:6px}
+.ex-box{background:#fff;border:1.5px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:10px}
+.ex-q{font-family:'Amiri',serif;font-size:24px;text-align:center;color:var(--ink);margin-bottom:10px}
+.ex-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ex-opt{padding:10px;border-radius:10px;border:1.5px solid var(--bd);background:#fff;cursor:pointer;font-family:'Amiri',serif;font-size:18px;text-align:center;transition:all .15s}
+.ex-opt.correct{background:#E8F5E9;border-color:#2E7D32;color:#2E7D32}
+.ex-opt.wrong{background:#FAEAEA;border-color:#C4545A;color:#C4545A}
+.ex-res{text-align:center;font-size:13px;margin-top:8px;font-weight:600;display:none}
+
+/* PRIVATE */
+.pmlist{padding:10px;display:flex;flex-direction:column;gap:6px}
+.pmitem{display:flex;align-items:center;gap:10px;padding:12px;background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);cursor:pointer}
+.pminfo{flex:1;min-width:0}
+.pmname{font-size:14px;font-weight:600;color:var(--ink)}
+.pmlast{font-size:12px;color:var(--t3);margin-top:2px}
+.odot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0}
+.pmchat{display:none;position:fixed;inset:0;background:var(--sf);z-index:100;flex-direction:column}
+.pmchat.open{display:flex}
+
+/* DRAWER */
+.dovly{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50}
+.dovly.open{display:block}
+.drawer{position:fixed;top:0;right:0;width:260px;height:100%;background:var(--sf);z-index:51;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s}
+.drawer.open{transform:translateX(0)}
+.dh{padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));background:linear-gradient(135deg,#1a1040,#2d1f7a);color:#fff}
+.dht{font-size:16px;font-weight:700}
+.dhs{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
+.dlist{flex:1;overflow-y:auto;padding:10px 0}
+.ditem{display:flex;align-items:center;gap:10px;padding:10px 16px}
+.dname{font-size:14px;color:var(--ink);flex:1}
+.dtag{font-size:10px;background:#FAEEDA;color:#633806;padding:2px 6px;border-radius:4px;font-weight:600}
+.dftr{padding:12px 16px;border-top:1px solid var(--bd)}
+.dlvbtn{width:100%;padding:10px;border-radius:var(--rs);border:1px solid var(--bd);background:transparent;color:var(--t2);cursor:pointer;font-size:14px;font-family:'Cairo',sans-serif}
+.empty{text-align:center;padding:40px 20px;color:var(--t3)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="screen active">
+  <div class="login-logo">نور</div>
+  <div class="login-title">Institut Noor</div>
+  <div style="width:40px;height:2px;background:var(--gold);margin:8px auto 12px"></div>
+  <div class="login-sub">فصل العربية — Cours d'Arabe</div>
+  <div class="lcard">
+    <div><div class="fl">اسمك / Votre prénom</div>
+    <input class="ti" id="ni" type="text" style="display:block;width:100%;color:#fff;background:rgba(255,255,255,.08)" placeholder="Pierre, Marie, Ahmed..." maxlength="24" autocomplete="off" dir="auto"/></div>
+    <div><div class="fl">دورك / Rôle</div>
+    <div class="rrow">
+      <div class="rb on" id="rb-s" onclick="setRole('student')">Étudiant — طالب</div>
+      <div class="rb" id="rb-t" onclick="setRole('teacher')">Professeur — أستاذ</div>
+    </div></div>
+    <button class="jbtn" onclick="joinApp()">▶ انضم — Rejoindre</button>
+    <div class="err" id="err">⚠ الرجاء كتابة اسمك</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="screen">
+  <div class="atop">
+    <div class="atitle" id="atitle">💬 الدردشة</div>
+    <div class="opill"><div class="gdot"></div><span id="onum">0</span></div>
+    <button class="tbtn" onclick="openD()">☰</button>
+  </div>
+
+  <!-- CHAT PAGE -->
+  <div id="pg-chat" class="page active">
+    <div class="msgs" id="msgs"></div>
+    <div class="iwrap">
+      <button class="sbtn" onclick="sendMsg()"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+      <input class="cinp" id="ci" type="text" placeholder="اكتب بالعربية..." maxlength="300" onkeydown="if(event.key==='Enter')sendMsg()" autocomplete="off"/>
+      <button class="vbtn" id="vmb" onclick="toggleVM()">🎤</button>
+    </div>
+  </div>
+
+  <!-- LESSONS PAGE -->
+  <div id="pg-lessons" class="page">
+    <div class="phdr"><div class="pht">📚 الدروس والمفردات</div><div class="phs">Les leçons et le vocabulaire</div></div>
+    <div class="llist" id="llist"></div>
+  </div>
+
+  <!-- NOURANIA PAGE -->
+  <div id="pg-nourania" class="page">
+    <div class="phdr" style="background:linear-gradient(135deg,#1A1208,#2D1F08)">
+      <div class="pht" style="font-family:'Amiri',serif;font-size:22px;color:var(--gold)">القاعدة النورانية</div>
+      <div class="phs">La Règle Nourania — تعلّم قراءة القرآن</div>
+    </div>
+    <div class="ntabs" id="ntabs">
+      <button class="ntab active" onclick="showNTab('n1',this)">الحروف</button>
+      <button class="ntab" onclick="showNTab('n2',this)">المقاطع</button>
+      <button class="ntab" onclick="showNTab('n3',this)">الحركات</button>
+      <button class="ntab" onclick="showNTab('n4',this)">المدود</button>
+      <button class="ntab" onclick="showNTab('n5',this)">تمارين</button>
+    </div>
+
+    <div id="n1" class="npage active">
+      <div class="stitle">الحروف الهجائية</div>
+      <div class="nlcard">
+        <div class="nlhdr"><div class="nlnum">١</div><div><div style="font-size:15px;font-weight:600">الحروف المنفردة</div><div style="font-size:12px;color:var(--t3)">اضغط لسماع كل حرف</div></div></div>
+        <div class="play-row">
+          <button class="pbtn pb-all" onclick="playAllChars()">▶ استمع للكل</button>
+          <button class="pbtn pb-stop" onclick="stopAll()">■ إيقاف</button>
+        </div>
+        <div class="cchar-grid" id="char-grid"></div>
+      </div>
+      <div class="nlcard">
+        <div class="nlhdr"><div class="nlnum">٢</div><div><div style="font-size:15px;font-weight:600">الحروف المقطعة</div><div style="font-size:12px;color:var(--t3)">في أوائل السور القرآنية</div></div></div>
+        <div class="arblock">
+          <div class="artext" id="maqtaa"></div>
+        </div>
+        <div class="expl"><div class="expl-t">📌 شرح</div>تُقرأ بأسمائها — الم = ألف لام ميم</div>
+      </div>
+    </div>
+
+    <div id="n2" class="npage">
+      <div class="stitle">المقاطع الصوتية</div>
+      <div class="nlcard">
+        <div class="nlhdr"><div class="nlnum">١</div><div><div style="font-size:15px;font-weight:600">بالفتحة (a)</div></div></div>
+        <div class="play-row">
+          <button class="pbtn pb-all" onclick="playGroup('fatha')">▶ استمع</button>
+          <button class="pbtn pb-slow" onclick="playGroup('fatha',true)">🐢 ببطء</button>
+          <button class="pbtn pb-stop" onclick="stopAll()">■</button>
+        </div>
+        <div class="arblock"><div class="artext" id="fatha" onclick="speakWord(event)">
+          <span>بَ</span> <span>تَ</span> <span>ثَ</span> <span>جَ</span> <span>حَ</span> <span>خَ</span><br>
+          <span>دَ</span> <span>ذَ</span> <span>رَ</span> <span>زَ</span> <span>سَ</span> <span>شَ</span><br>
+          <span>صَ</span> <span>ضَ</span> <span>طَ</span> <span>ظَ</span> <span>عَ</span> <span>غَ</span><br>
+          <span>فَ</span> <span>قَ</span> <span>كَ</span> <span>لَ</span> <span>مَ</span> <span>نَ</span> <span>هَ</span> <span>وَ</span> <span>يَ</span>
+        </div></div>
+      </div>
+      <div class="nlcard">
+        <div class="nlhdr"><div class="nlnum">٢</div><div><div style="font-size:15px;font-weight:600">بالضمة (ou)</div></div></div>
+        <div class="play-row">
+          <button class="pbtn pb-all" onclick="playGroup('damma')">▶ استمع</button>
+          <button class="pbtn pb-stop" onclick="stopAll()">■</button>
+        </div>
+        <div class="arblock"><div class="artext" id="damma" onclick="speakWord(event)">
+          <span>بُ</span> <span>تُ</span> <span>ثُ</span> <span>جُ</span> <span>حُ</span> <span>خُ</span><br>
+          <span>دُ</span> <span>ذُ</span> <span>رُ</span> <span>زُ</span> <span>سُ</span> <span>شُ</span><br>
+          <span>صُ</span> <span>ضُ</span> <span>طُ</span> <span>ظُ</span> <span>عُ</span> <span>غُ</span><br>
+          <span>فُ</span> <span>قُ</span> <span>كُ</span> <span>لُ</span> <span>مُ</span> <span>نُ</span> <span>هُ</span> <span>وُ</span> <span>يُ</span>
+        </div></div>
+      </div>
+      <div class="nlcard">
+        <div class="nlhdr"><div class="nlnum">٣</div><div><div style="font-size:15px;font-weight:600">بالكسرة (i)</div></div></div>
+        <div class="play-row">
+          <button class="pbtn pb-all" onclick="playGroup('kasra')">▶ استمع</button>
+          <button class="pbtn pb-stop" onclick="stopAll()">■</button>
+        </div>
+        <div class="arblock"><div class="artext" id="kasra" onclick="speakWord(event)">
+          <span>بِ</span> <span>تِ</span> <span>ثِ</span> <span>جِ</span> <span>حِ</span> <span>خِ</span><br>
+          <span>دِ</span> <span>ذِ</span> <span>رِ</span> <span>زِ</span> <span>سِ</span> <span>شِ</span><br>
+          <span>صِ</span> <span>ضِ</span> <span>طِ</span> <span>ظِ</span> <span>عِ</span> <span>غِ</span><br>
+          <span>فِ</span> <span>قِ</span> <span>كِ</span> <span>لِ</span> <span>مِ</span> <span>نِ</span> <span>هِ</span> <span>وِ</span> <span>يِ</span>
+        </div></div>
+      </div>
+    </div>
+
+    <div id="n3" class="npage">
+      <div class="stitle">الحركات</div>
+      <div class="nlcard">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="expl" style="background:#FFFDF5;border:1.5px solid rgba(201,168,76,.3)" onclick="speak('بَ تَ ثَ جَ')">
+            <div class="expl-t" style="color:var(--gd)">الفَتْحة (a) — فوق الحرف</div>
+            <div style="font-family:'Amiri',serif;font-size:24px;text-align:center;margin:6px 0;direction:rtl">بَ — تَ — ثَ — جَ</div>
+          </div>
+          <div class="expl" style="background:#EAF0FA;border:1.5px solid rgba(42,74,139,.2)" onclick="speak('بُ تُ ثُ جُ')">
+            <div class="expl-t" style="color:#2A4A8B">الضَّمَّة (ou) — فوق الحرف</div>
+            <div style="font-family:'Amiri',serif;font-size:24px;text-align:center;margin:6px 0;direction:rtl">بُ — تُ — ثُ — جُ</div>
+          </div>
+          <div class="expl" style="background:#FAEDF0;border:1.5px solid rgba(155,58,80,.2)" onclick="speak('بِ تِ ثِ جِ')">
+            <div class="expl-t" style="color:#9B3A50">الكَسْرة (i) — تحت الحرف</div>
+            <div style="font-family:'Amiri',serif;font-size:24px;text-align:center;margin:6px 0;direction:rtl">بِ — تِ — ثِ — جِ</div>
+          </div>
+          <div class="expl" style="background:var(--tl);border:1.5px solid rgba(29,158,117,.2)" onclick="speak('بْ تْ ثْ')">
+            <div class="expl-t" style="color:var(--teal)">السُّكُون (0) — دائرة فوق الحرف</div>
+            <div style="font-family:'Amiri',serif;font-size:24px;text-align:center;margin:6px 0;direction:rtl">بْ — تْ — ثْ</div>
+          </div>
+        </div>
+      </div>
+      <div class="nlcard">
+        <div class="nlhdr"><div class="nlnum">٢</div><div><div style="font-size:15px;font-weight:600">التنوين</div><div style="font-size:12px;color:var(--t3)">La nunation</div></div></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="expl" style="background:#FFFDF5;border:1.5px solid rgba(201,168,76,.3)" onclick="speak('كتاباً عِلماً')">
+            <div class="expl-t" style="color:var(--gd)">تنوين الفتح (an)</div>
+            <div style="font-family:'Amiri',serif;font-size:22px;text-align:center;direction:rtl">كِتَابًا — عِلْمًا</div>
+          </div>
+          <div class="expl" style="background:#EAF0FA;" onclick="speak('كتابٌ عِلمٌ')">
+            <div class="expl-t" style="color:#2A4A8B">تنوين الضم (oun)</div>
+            <div style="font-family:'Amiri',serif;font-size:22px;text-align:center;direction:rtl">كِتَابٌ — عِلْمٌ</div>
+          </div>
+          <div class="expl" style="background:#FAEDF0;" onclick="speak('كتابٍ عِلمٍ')">
+            <div class="expl-t" style="color:#9B3A50">تنوين الكسر (in)</div>
+            <div style="font-family:'Amiri',serif;font-size:22px;text-align:center;direction:rtl">كِتَابٍ — عِلْمٍ</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="n4" class="npage">
+      <div class="stitle">المدود</div>
+      <div class="nlcard">
+        <div class="nlhdr"><div class="nlnum">١</div><div><div style="font-size:15px;font-weight:600">حروف المد الثلاثة</div></div></div>
+        <div class="arblock"><div class="artext" onclick="speakWord(event)">
+          <span>بَا</span> &nbsp;<span>بُو</span> &nbsp;<span>بِي</span><br>
+          <span>تَا</span> &nbsp;<span>تُو</span> &nbsp;<span>تِي</span><br>
+          <span>نَا</span> &nbsp;<span>نُو</span> &nbsp;<span>نِي</span>
+        </div></div>
+        <div class="expl">
+          <div class="expl-t">📌 القاعدة</div>
+          المد الطبيعي = حركتان
+          <div style="font-family:'Amiri',serif;font-size:22px;text-align:center;margin-top:8px;direction:rtl" onclick="speak('قال يقول قيل')">قَالَ — يَقُولُ — قِيلَ</div>
+        </div>
+      </div>
+      <div class="nlcard">
+        <div class="nlhdr"><div class="nlnum">٢</div><div><div style="font-size:15px;font-weight:600">المد مع الشدة</div></div></div>
+        <div class="arblock"><div class="artext" onclick="speakWord(event)">
+          <span>بَّا</span> &nbsp;<span>بُّو</span> &nbsp;<span>بِّي</span><br>
+          <span>تَّا</span> &nbsp;<span>تُّو</span> &nbsp;<span>تِّي</span>
+        </div></div>
+      </div>
+    </div>
+
+    <div id="n5" class="npage">
+      <div class="stitle">تمارين</div>
+      <div class="nlcard">
+        <div class="nlhdr"><div class="nlnum">١</div><div><div style="font-size:15px;font-weight:600">عرّف الحرف</div></div></div>
+        <div id="quiz-c"></div>
+        <button onclick="nextQ()" style="width:100%;padding:11px;border-radius:10px;background:linear-gradient(135deg,var(--gd),var(--gold));border:none;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'Cairo',sans-serif;margin-top:10px">سؤال آخر ←</button>
+      </div>
+      <div class="nlcard">
+        <div class="nlhdr"><div class="nlnum">٢</div><div><div style="font-size:15px;font-weight:600">اسمع واختر</div></div></div>
+        <div id="listen-c"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOICE PAGE -->
+  <div id="pg-voice" class="page">
+    <div class="phdr"><div class="pht">🎤 غرفة الصوت</div><div class="phs">Salle vocale en temps réel</div></div>
+    <div class="vroom">
+      <div class="vrstat" id="vrstat">اضغط 🎤 للانضمام للغرفة</div>
+      <div class="vrusrs" id="vrusrs"></div>
+      <div class="vrctrl">
+        <button class="vrbtn vrmute" id="mutebtn" onclick="toggleMute()" style="display:none">🔊</button>
+        <button class="vrbtn vrjoin" id="vjbtn" onclick="joinVoice()">🎤</button>
+        <button class="vrbtn vrlv" id="vlbtn" onclick="leaveVoice()" style="display:none">📵</button>
+      </div>
+      <div style="background:var(--tl);border-radius:var(--rs);padding:14px;width:100%;margin-top:10px">
+        <div style="font-size:13px;font-weight:600;color:var(--teal);margin-bottom:6px">💡 كيف يعمل؟</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.7">اضغط 🎤 للدخول ← تكلم بالعربية ← زملاؤك يسمعونك مباشرة!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIVATE PAGE -->
+  <div id="pg-private" class="page">
+    <div class="phdr"><div class="pht">💬 المحادثات الخاصة</div><div class="phs">Messages privés</div></div>
+    <div class="pmlist" id="pmlist"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bnav">
+    <button class="bn active" onclick="showPg('chat',this)">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>دردشة
+    </button>
+    <button class="bn" onclick="showPg('lessons',this)">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>دروس
+    </button>
+    <button class="bn" onclick="showPg('nourania',this)">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>نورانية
+    </button>
+    <button class="bn" onclick="showPg('voice',this)">
+      <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>صوت
+    </button>
+    <button class="bn" onclick="showPg('private',this)">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>خاص
+    </button>
+  </div>
+</div>
+
+<!-- LESSON DETAIL -->
+<div class="ldet" id="ldet">
+  <div class="ldhdr">
+    <button class="bbk" onclick="closeLsn()">←</button>
+    <div><div id="ldt" style="font-size:16px;font-weight:700"></div><div id="lds" style="font-size:12px;color:rgba(255,255,255,.6);margin-top:2px"></div></div>
+  </div>
+  <div class="ldbody" id="ldbody"></div>
+</div>
+
+<!-- PRIVATE CHAT -->
+<div class="pmchat" id="pmchat">
+  <div class="atop" style="padding-top:calc(12px + env(safe-area-inset-top,0px))">
+    <button class="tbtn" onclick="closePM()">←</button>
+    <div class="atitle" id="pmcname"></div>
+    <div class="opill"><div class="gdot"></div><span>متصل</span></div>
+  </div>
+  <div class="msgs" id="pmmsgs" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px"></div>
+  <div class="iwrap">
+    <button class="sbtn" onclick="sendPM()"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+    <input class="cinp" id="pmi" type="text" placeholder="اكتب رسالة..." maxlength="300" onkeydown="if(event.key==='Enter')sendPM()" autocomplete="off"/>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="dovly" id="dovly" onclick="closeD()"></div>
+<div class="drawer" id="drawer">
+  <div class="dh"><div class="dht">المتصلون الآن</div><div class="dhs" id="dsub">0 في الفصل</div></div>
+  <div class="dlist" id="dlist"></div>
+  <div class="dftr"><button class="dlvbtn" onclick="leaveApp()">مغادرة الفصل</button></div>
+</div>
+
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getDatabase,ref,push,onValue,set,remove,onDisconnect}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const FC={apiKey:"AIzaSyC9WsBwhpG-UdM62Xa1BiZjW8gL74rAv34",authDomain:"parle-arabe.firebaseapp.com",databaseURL:"https://parle-arabe-default-rtdb.europe-west1.firebasedatabase.app",projectId:"parle-arabe",storageBucket:"parle-arabe.firebasestorage.app",messagingSenderId:"985415763625",appId:"1:985415763625:web:e9727341e4110572180bb8"};
+
+const CL=[{bg:'#EEEDFE',fg:'#3C3489'},{bg:'#E1F5EE',fg:'#085041'},{bg:'#FAECE7',fg:'#712B13'},{bg:'#E6F1FB',fg:'#0C447C'},{bg:'#FAEEDA',fg:'#633806'},{bg:'#EAF3DE',fg:'#27500A'},{bg:'#FBEAF0',fg:'#72243E'}];
+const LS=[
+  {id:'l1',icon:'👋',color:'#EEEDFE',title:'التعارف',sub:'Se présenter',vocab:[{ar:'مرحباً',fr:'Bonjour'},{ar:'اسمي',fr:'Je m\'appelle'},{ar:'كيف حالك؟',fr:'Comment vas-tu ?'},{ar:'بخير',fr:'Bien'},{ar:'شكراً',fr:'Merci'},{ar:'عفواً',fr:'De rien'},{ar:'إلى اللقاء',fr:'Au revoir'},{ar:'من أين أنت؟',fr:'D\'où es-tu ?'}],rules:[{t:'المذكر والمؤنث',b:'مذكر: طالب، أستاذ\nمؤنث: طالبة، أستاذة (تنتهي بـ ة)'},{t:'الضمائر',b:'أنا = Je\nأنتَ = Tu (homme)\nأنتِ = Tu (femme)'}],ex:[{ar:'أنا اسمي زكريا',fr:'Je m\'appelle Zakaria'},{ar:'أنا من فرنسا',fr:'Je suis de France'}]},
+  {id:'l2',icon:'🏠',color:'#E1F5EE',title:'الأسرة والمنزل',sub:'La famille et la maison',vocab:[{ar:'أب',fr:'Père'},{ar:'أم',fr:'Mère'},{ar:'أخ',fr:'Frère'},{ar:'أخت',fr:'Sœur'},{ar:'بيت',fr:'Maison'},{ar:'غرفة',fr:'Chambre'},{ar:'مطبخ',fr:'Cuisine'},{ar:'باب',fr:'Porte'}],rules:[{t:'المفرد والمثنى والجمع',b:'مفرد: كتاب\nمثنى: كتابان\nجمع: كتب'}],ex:[{ar:'عندي أخ وأختان',fr:'J\'ai un frère et deux sœurs'},{ar:'بيتي كبير وجميل',fr:'Ma maison est grande et belle'}]},
+  {id:'l3',icon:'🛒',color:'#FAEEDA',title:'في السوق',sub:'Au marché',vocab:[{ar:'كم الثمن؟',fr:'Quel est le prix ?'},{ar:'غالي',fr:'Cher'},{ar:'رخيص',fr:'Pas cher'},{ar:'أريد',fr:'Je veux'},{ar:'خبز',fr:'Pain'},{ar:'ماء',fr:'Eau'},{ar:'تفاح',fr:'Pommes'},{ar:'دجاج',fr:'Poulet'}],rules:[{t:'حروف الجر',b:'في = dans/en\nعلى = sur\nمن = de\nإلى = vers\nمع = avec'}],ex:[{ar:'أريد كيلو من التفاح',fr:'Je veux un kilo de pommes'},{ar:'كم ثمن الخبز؟',fr:'Quel est le prix du pain ?'}]},
+  {id:'l4',icon:'🍽️',color:'#FAECE7',title:'في المطعم',sub:'Au restaurant',vocab:[{ar:'طاولة',fr:'Table'},{ar:'قائمة الطعام',fr:'Menu'},{ar:'أريد أن آكل',fr:'Je veux manger'},{ar:'لذيذ',fr:'Délicieux'},{ar:'الحساب',fr:'L\'addition'},{ar:'ماء',fr:'Eau'},{ar:'عصير',fr:'Jus'},{ar:'قهوة',fr:'Café'}],rules:[{t:'الفعل المضارع',b:'أنا آكل = Je mange\nأنت تأكل = Tu manges\nهو يأكل = Il mange\nهي تأكل = Elle mange'}],ex:[{ar:'أريد طاولة لشخصين',fr:'Je voudrais une table pour deux'},{ar:'الطعام لذيذ جداً',fr:'La nourriture est très délicieuse'}]},
+];
+const LETTERS=[{ar:'أ',name:'ألف',tr:'Alif'},{ar:'ب',name:'باء',tr:'Ba'},{ar:'ت',name:'تاء',tr:'Ta'},{ar:'ث',name:'ثاء',tr:'Tha'},{ar:'ج',name:'جيم',tr:'Jim'},{ar:'ح',name:'حاء',tr:'Ha'},{ar:'خ',name:'خاء',tr:'Kha'},{ar:'د',name:'دال',tr:'Dal'},{ar:'ذ',name:'ذال',tr:'Dhal'},{ar:'ر',name:'راء',tr:'Ra'},{ar:'ز',name:'زاي',tr:'Zay'},{ar:'س',name:'سين',tr:'Sin'},{ar:'ش',name:'شين',tr:'Shin'},{ar:'ص',name:'صاد',tr:'Sad'},{ar:'ض',name:'ضاد',tr:'Dad'},{ar:'ط',name:'طاء',tr:'Ta'},{ar:'ظ',name:'ظاء',tr:'Dha'},{ar:'ع',name:'عين',tr:"Ain"},{ar:'غ',name:'غين',tr:'Ghain'},{ar:'ف',name:'فاء',tr:'Fa'},{ar:'ق',name:'قاف',tr:'Qaf'},{ar:'ك',name:'كاف',tr:'Kaf'},{ar:'ل',name:'لام',tr:'Lam'},{ar:'م',name:'ميم',tr:'Mim'},{ar:'ن',name:'نون',tr:'Noun'},{ar:'ه',name:'هاء',tr:'Ha'},{ar:'و',name:'واو',tr:'Waw'},{ar:'ي',name:'ياء',tr:'Ya'}];
+const QUIZ=[{q:'ب',opts:['باء','تاء','ثاء','نون'],ans:'باء'},{q:'ح',opts:['خاء','حاء','جيم','هاء'],ans:'حاء'},{q:'ص',opts:['ضاد','سين','صاد','شين'],ans:'صاد'},{q:'ع',opts:['غين','عين','حاء','خاء'],ans:'عين'},{q:'ق',opts:['فاء','قاف','كاف','غين'],ans:'قاف'},{q:'ذ',opts:['دال','زاي','ذال','راء'],ans:'ذال'},{q:'ن',opts:['ميم','نون','لام','هاء'],ans:'نون'}];
+
+function cFor(n){let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))%CL.length;return CL[h]}
+function ini(n){const p=n.trim().split(' ');return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():n.slice(0,2).toUpperCase()}
+function nw(){const d=new Date();return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')}
+function es(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+const appFb=initializeApp(FC);const db=getDatabase(appFb);
+let myName='',myRole='student',myURef=null,curPM=null,vStream=null,isMuted=false,isRec=false,mr=null,qIdx=0;
+
+window.setRole=r=>{myRole=r;document.getElementById('rb-s').classList.toggle('on',r==='student');document.getElementById('rb-t').classList.toggle('on',r==='teacher')};
+
+window.joinApp=async()=>{
+  const n=document.getElementById('ni').value.trim();
+  if(!n){document.getElementById('err').style.display='block';return;}
+  myName=n;
+  document.getElementById('login').classList.remove('active');
+  document.getElementById('app').classList.add('active');
+  loadLessons();buildChars();buildMaqtaa();renderQuiz();renderListenQ();
+  try{
+    const uid=myName+'_'+Date.now();myURef=ref(db,'users/'+uid);
+    await set(myURef,{name:myName,role:myRole,ts:Date.now()});
+    onDisconnect(myURef).remove();
+    await push(ref(db,'messages'),{type:'system',text:myName+(myRole==='teacher'?' (أستاذ)':'')+' انضم إلى الفصل',ts:Date.now()});
+    onValue(ref(db,'messages'),s=>{const m=[];s.forEach(c=>m.push(c.val()));renderMsgs(m)});
+    onValue(ref(db,'users'),s=>{const u=[];s.forEach(c=>u.push(c.val()));renderUsers(u);loadPMList(u)});
+  }catch(e){console.error(e)}
+};
+
+window.leaveApp=async()=>{
+  if(myURef){await push(ref(db,'messages'),{type:'system',text:myName+' غادر الفصل',ts:Date.now()});await remove(myURef);}
+  location.reload();
+};
+
+window.sendMsg=async()=>{
+  const i=document.getElementById('ci'),t=i.value.trim();if(!t)return;i.value='';
+  if(db)await push(ref(db,'messages'),{type:'msg',from:myName,role:myRole,text:t,time:nw(),ts:Date.now()});
+};
+
+function renderMsgs(msgs){
+  const c=document.getElementById('msgs'),ab=c.scrollHeight-c.scrollTop-c.clientHeight<80;
+  c.innerHTML='';
+  msgs.sort((a,b)=>a.ts-b.ts).forEach(m=>{
+    if(m.type==='system'){const d=document.createElement('div');d.className='smsg';d.textContent=m.text;c.appendChild(d);return;}
+    const iM=m.from===myName,iT=m.role==='teacher',cl=cFor(m.from);
+    const r=document.createElement('div');r.className='mrow'+(iM?' me':'');
+    let bc='bbl ';if(iM)bc+='bm';else if(iT)bc+='bt';else bc+='bo';
+    r.innerHTML=`<div class="av" style="background:${cl.bg};color:${cl.fg}">${ini(m.from)}</div>
+      <div class="mbody"><div class="msndr">${iM?'أنت':es(m.from)}${iT&&!iM?' <span class="tbdg">أستاذ</span>':''}</div>
+      <div class="${bc}">${es(m.text)}</div><div class="mtime">${m.time||''}</div></div>`;
+    c.appendChild(r);
+  });
+  if(ab)c.scrollTop=c.scrollHeight;
+}
+
+function renderUsers(users){
+  const n=users.length;
+  document.getElementById('onum').textContent=n;
+  document.getElementById('dsub').textContent=n+(n===1?' متصل':' متصلون');
+  const dl=document.getElementById('dlist');dl.innerHTML='';
+  users.forEach(u=>{
+    const cl=cFor(u.name),d=document.createElement('div');d.className='ditem';
+    d.innerHTML=`<div class="av" style="background:${cl.bg};color:${cl.fg};width:34px;height:34px;font-size:12px">${ini(u.name)}</div>
+      <div class="dname">${es(u.name)}${u.name===myName?' (أنت)':''}</div>
+      ${u.role==='teacher'?'<span class="dtag">أستاذ</span>':''}
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--teal)"></div>`;
+    dl.appendChild(d);
+  });
+}
+
+function loadPMList(users){
+  const l=document.getElementById('pmlist');l.innerHTML='';
+  const ot=users.filter(u=>u.name!==myName);
+  if(!ot.length){l.innerHTML='<div class="empty"><div style="font-size:36px;margin-bottom:10px">👥</div><div>انتظر حتى ينضم طلاب آخرون</div></div>';return;}
+  ot.forEach(u=>{
+    const cl=cFor(u.name),d=document.createElement('div');d.className='pmitem';
+    d.onclick=()=>openPMChat(u.name);
+    d.innerHTML=`<div class="av" style="background:${cl.bg};color:${cl.fg};width:40px;height:40px;font-size:13px">${ini(u.name)}</div>
+      <div class="pminfo"><div class="pmname">${es(u.name)}${u.role==='teacher'?' 🎓':''}</div>
+      <div class="pmlast">اضغط للمحادثة الخاصة</div></div><div class="odot"></div>`;
+    l.appendChild(d);
+  });
+}
+
+window.openPMChat=name=>{
+  curPM=name;document.getElementById('pmcname').textContent=name;
+  document.getElementById('pmchat').classList.add('open');
+  document.getElementById('pmmsgs').innerHTML='';
+  if(db){
+    const k=[myName,name].sort().join('_');
+    onValue(ref(db,'pm/'+k),s=>{
+      const msgs=[];s.forEach(c=>msgs.push(c.val()));
+      const c=document.getElementById('pmmsgs');c.innerHTML='';
+      msgs.sort((a,b)=>a.ts-b.ts).forEach(m=>{
+        const iM=m.from===myName,cl=cFor(m.from);
+        const r=document.createElement('div');r.className='mrow'+(iM?' me':'');
+        r.innerHTML=`<div class="av" style="background:${cl.bg};color:${cl.fg}">${ini(m.from)}</div>
+          <div class="mbody"><div class="msndr">${iM?'أنت':es(m.from)}</div>
+          <div class="bbl ${iM?'bm':'bo'}">${es(m.text)}</div><div class="mtime">${m.time||''}</div></div>`;
+        c.appendChild(r);
+      });
+      c.scrollTop=c.scrollHeight;
+    });
+  }
+};
+window.closePM=()=>document.getElementById('pmchat').classList.remove('open');
+window.sendPM=async()=>{
+  const i=document.getElementById('pmi'),t=i.value.trim();if(!t||!curPM)return;i.value='';
+  if(db){const k=[myName,curPM].sort().join('_');await push(ref(db,'pm/'+k),{from:myName,text:t,time:nw(),ts:Date.now()});}
+};
+
+// LESSONS
+function loadLessons(){
+  const l=document.getElementById('llist');l.innerHTML='';
+  LS.forEach(ls=>{
+    const d=document.createElement('div');d.className='lcard';d.onclick=()=>openLsn(ls);
+    d.innerHTML=`<div class="lctop"><div class="lcico" style="background:${ls.color}">${ls.icon}</div>
+      <div><div class="lct">${ls.title}</div><div class="lcs">${ls.sub}</div></div></div>
+      <div class="pbar"><div class="pfill" style="width:0%"></div></div>
+      <div style="font-size:11px;color:var(--t3);margin-top:4px">${ls.vocab.length} كلمة • ${ls.rules.length} قاعدة</div>`;
+    l.appendChild(d);
+  });
+}
+
+window.openLsn=ls=>{
+  document.getElementById('ldt').textContent=ls.icon+' '+ls.title;
+  document.getElementById('lds').textContent=ls.sub;
+  let h=`<div class="stitle">المفردات — Vocabulaire</div><div class="vcgrid">`;
+  ls.vocab.forEach(v=>{h+=`<div class="vcard"><div class="vcar">${v.ar}</div><div class="vcfr">${v.fr}</div><button class="spkbtn" onclick="speak('${v.ar}')">🔊</button></div>`;});
+  h+='</div>';
+  ls.rules.forEach(r=>{h+=`<div class="rbox"><div class="rtitle">📖 ${r.t}</div><div class="rtxt">${r.b.replace(/\n/g,'<br>')}</div></div>`;});
+  h+='<div class="stitle">أمثلة — Exemples</div>';
+  ls.ex.forEach(e=>{h+=`<div class="exrow"><div><div style="font-family:\'Amiri\',serif;font-size:18px">${e.ar}</div><div style="font-size:12px;color:var(--t3)">${e.fr}</div></div><button class="spkbtn" onclick="speak('${e.ar}')">🔊</button></div>`;});
+  document.getElementById('ldbody').innerHTML=h;
+  document.getElementById('ldet').classList.add('open');
+};
+window.closeLsn=()=>document.getElementById('ldet').classList.remove('open');
+
+// NOURANIA
+function buildChars(){
+  const g=document.getElementById('char-grid');
+  LETTERS.forEach((l,i)=>{
+    const d=document.createElement('div');d.className='cchar';d.id='ch-'+i;
+    d.onclick=()=>{speak(l.name);d.classList.add('playing');setTimeout(()=>d.classList.remove('playing'),1200)};
+    d.innerHTML=`<div class="cchar-ar">${l.ar}</div><div class="cchar-nm">${l.name}</div><div class="cchar-tr">${l.tr}</div>`;
+    g.appendChild(d);
+  });
+}
+
+function buildMaqtaa(){
+  const mt=document.getElementById('maqtaa');
+  ['الم','المص','الر','كهيعص','طه','يس','حم','ق','ن'].forEach(m=>{
+    const s=document.createElement('span');s.textContent=m+' ';s.onclick=()=>speak(m);mt.appendChild(s);
+  });
+}
+
+let playT=null;
+function stopAll(){speechSynthesis.cancel();if(playT)clearTimeout(playT);document.querySelectorAll('.artext span,.cchar').forEach(s=>s.classList.remove('playing'));}
+
+window.speak=function(t,rate=0.7){if(!speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ar-SA';u.rate=rate;speechSynthesis.speak(u);};
+
+window.speakWord=e=>{
+  if(e.target.tagName==='SPAN'&&e.target.textContent.trim()){
+    document.querySelectorAll('.artext span').forEach(s=>s.classList.remove('playing'));
+    e.target.classList.add('playing');speak(e.target.textContent.trim());
+    setTimeout(()=>e.target.classList.remove('playing'),1200);
+  }
+};
+
+window.playAllChars=()=>{
+  stopAll();let i=0;
+  function nx(){if(i>=LETTERS.length)return;const el=document.getElementById('ch-'+i);el.classList.add('playing');speak(LETTERS[i].name);i++;playT=setTimeout(nx,1000);}
+  nx();
+};
+
+window.playGroup=(id,slow=false)=>{
+  stopAll();const spans=document.querySelectorAll('#'+id+' span');let i=0;
+  function nx(){if(i>=spans.length)return;document.querySelectorAll('.artext span').forEach(s=>s.classList.remove('playing'));spans[i].classList.add('playing');speak(spans[i].textContent.trim(),slow?0.4:0.7);i++;playT=setTimeout(nx,slow?1400:900);}
+  nx();
+};
+
+window.showNTab=(id,btn)=>{
+  document.querySelectorAll('.npage').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');btn.classList.add('active');stopAll();
+};
+
+// QUIZ
+function renderQuiz(){
+  const q=QUIZ[qIdx%QUIZ.length];
+  document.getElementById('quiz-c').innerHTML=`<div class="ex-box">
+    <div class="ex-q">${q.q}</div>
+    <div class="ex-opts">${q.opts.map(o=>`<button class="ex-opt" onclick="checkQ(this,'${o}','${q.ans}')">${o}</button>`).join('')}</div>
+    <div class="ex-res" id="qr"></div></div>`;
+}
+window.checkQ=(btn,c,a)=>{
+  document.querySelectorAll('#quiz-c .ex-opt').forEach(b=>b.disabled=true);
+  const r=document.getElementById('qr');
+  if(c===a){btn.classList.add('correct');r.textContent='✅ صحيح! '+a;r.style.color='#2E7D32';speak(a);}
+  else{btn.classList.add('wrong');r.textContent='❌ الجواب: '+a;r.style.color='var(--rose)';speak(a);}
+  r.style.display='block';
+};
+window.nextQ=()=>{qIdx++;renderQuiz();};
+
+function renderListenQ(){
+  const lts=[...LETTERS].sort(()=>Math.random()-.5).slice(0,4);
+  const cor=lts[Math.floor(Math.random()*4)];
+  document.getElementById('listen-c').innerHTML=`<div class="ex-box">
+    <div style="text-align:center;margin-bottom:12px"><button onclick="speak('${cor.name}')" style="padding:12px 24px;border-radius:12px;background:linear-gradient(135deg,var(--teal),#25C48A);border:none;color:#fff;font-size:16px;cursor:pointer;font-family:'Cairo',sans-serif">🔊 استمع</button></div>
+    <div class="ex-opts">${lts.map(l=>`<button class="ex-opt" onclick="checkL(this,'${l.ar}','${cor.ar}')" style="font-family:'Amiri',serif;font-size:28px">${l.ar}</button>`).join('')}</div>
+    <div class="ex-res" id="lr"></div></div>`;
+}
+window.checkL=(btn,c,a)=>{
+  document.querySelectorAll('#listen-c .ex-opt').forEach(b=>b.disabled=true);
+  const r=document.getElementById('lr');
+  if(c===a){btn.classList.add('correct');r.textContent='✅ صحيح!';r.style.color='#2E7D32';}
+  else{btn.classList.add('wrong');r.textContent='❌ الجواب: '+a;r.style.color='var(--rose)';}
+  r.style.display='block';setTimeout(renderListenQ,2000);
+};
+
+// VOICE
+window.joinVoice=async()=>{
+  try{
+    vStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    document.getElementById('vrstat').textContent='أنت في الغرفة — تكلم بالعربية! 🎤';
+    document.getElementById('vjbtn').style.display='none';
+    document.getElementById('vlbtn').style.display='flex';
+    document.getElementById('mutebtn').style.display='flex';
+    if(db){await set(ref(db,'voice/'+myName),{name:myName,role:myRole,ts:Date.now()});
+      onValue(ref(db,'voice'),s=>{const u=[];s.forEach(c=>u.push(c.val()));renderVoice(u)});}
+  }catch(e){alert('يجب السماح بالوصول للميكروفون');}
+};
+window.leaveVoice=async()=>{
+  if(vStream)vStream.getTracks().forEach(t=>t.stop());
+  if(db)await remove(ref(db,'voice/'+myName));
+  document.getElementById('vrstat').textContent='اضغط 🎤 للانضمام للغرفة';
+  document.getElementById('vjbtn').style.display='flex';document.getElementById('vlbtn').style.display='none';document.getElementById('mutebtn').style.display='none';
+};
+window.toggleMute=()=>{isMuted=!isMuted;if(vStream)vStream.getAudioTracks().forEach(t=>t.enabled=!isMuted);document.getElementById('mutebtn').textContent=isMuted?'🔇':'🔊';};
+function renderVoice(users){
+  const c=document.getElementById('vrusrs');c.innerHTML='';
+  if(!users.length){c.innerHTML='<div style="color:var(--t3);font-size:13px">لا أحد في الغرفة بعد</div>';return;}
+  users.forEach(u=>{const cl=cFor(u.name);const d=document.createElement('div');d.className='vruser';d.innerHTML=`<div class="vrav" style="background:${cl.bg};color:${cl.fg};font-size:18px;font-weight:700">${ini(u.name)}</div><div class="vrname">${es(u.name)}</div>`;c.appendChild(d);});
+}
+
+// VOICE MSG
+window.toggleVM=async()=>{
+  const b=document.getElementById('vmb');
+  if(!isRec){
+    try{const s=await navigator.mediaDevices.getUserMedia({audio:true});mr=new MediaRecorder(s);const ch=[];
+      mr.ondataavailable=e=>ch.push(e.data);
+      mr.onstop=()=>{s.getTracks().forEach(t=>t.stop());const r=document.createElement('div');r.className='mrow me';const cl=cFor(myName);r.innerHTML=`<div class="av" style="background:${cl.bg};color:${cl.fg}">${ini(myName)}</div><div class="mbody"><div class="msndr">أنت</div><div class="bbl bm">🎤 رسالة صوتية</div></div>`;document.getElementById('msgs').appendChild(r);document.getElementById('msgs').scrollTop=999999;};
+      mr.start();isRec=true;b.textContent='⏹';b.classList.add('rec');
+    }catch(e){alert('يجب السماح بالوصول للميكروفون');}
+  }else{mr.stop();isRec=false;b.textContent='🎤';b.classList.remove('rec');}
+};
+
+// NAVIGATION
+window.showPg=(n,b)=>{
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bn').forEach(x=>x.classList.remove('active'));
+  document.getElementById('pg-'+n).classList.add('active');b.classList.add('active');
+  const t={chat:'💬 الدردشة',lessons:'📚 الدروس',nourania:'📖 القاعدة النورانية',voice:'🎤 صوت',private:'💬 خاص'};
+  document.getElementById('atitle').textContent=t[n]||'Institut Noor';
+};
+window.openD=()=>{document.getElementById('drawer').classList.add('open');document.getElementById('dovly').classList.add('open')};
+window.closeD=()=>{document.getElementById('drawer').classList.remove('open');document.getElementById('dovly').classList.remove('open')};
+</script>
+</body>
+</html>
